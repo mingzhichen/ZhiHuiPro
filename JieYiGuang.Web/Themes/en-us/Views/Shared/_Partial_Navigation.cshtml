@@ -1,0 +1,45 @@
+﻿@using JieYiGuang.Model
+@{
+    var newsId = (int)ViewBag.Id;
+    bool isEn = (ThemeManager.Theme != "zh-cn");
+    var i = 1;
+}
+@model List<T_ClassNews>
+
+<div class="navbox">
+    <div class="mj_nav">
+        @if (Model != null && Model.Count > 0)
+        {
+            for (int j = 0; j < Model.Count; j++)
+            {
+                var item = Model[j];
+                if (item.ID == newsId)
+                {
+                    i = j;
+                }
+                <div class="mj_nav_list">
+                    <span class="nav_span">@(item.SubTitle)</span>
+                    @if (item.children != null && item.children.Count > 0)
+                    {
+                        <ul>
+                            @foreach (T_ClassNews chilItem in item.children)
+                            {
+                                if (chilItem.ID == newsId)
+                                {
+                                    i = j;
+                                }
+                                var url = Url.Action("Product", "Home", new { ClassID = chilItem.ID });
+                                <li class="@(chilItem.ID == newsId ? "current" : "")"><a href="@(url)">@(isEn ? chilItem.SubTitle : chilItem.Title)</a></li>
+                            }
+                        </ul>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(".mj_nav_list span").eq(@(i)).addClass("mj_sn");
+    $(".mj_nav_list ul").eq(@(i)).show();
+</script>

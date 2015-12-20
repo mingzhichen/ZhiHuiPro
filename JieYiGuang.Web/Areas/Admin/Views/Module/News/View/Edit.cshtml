@@ -1,0 +1,338 @@
+﻿@model JieYiGuang.Model.T_News
+@{
+    Layout = "~/areas/admin/Views/Layout/_Layout_Base.cshtml";
+    JieYiGuang.Model.T_News newsEn = ViewData["ModelEn"] as JieYiGuang.Model.T_News;
+}
+@section Head{
+    @Html.Partial("~/areas/admin/Views/Layout/_Layout_Head_Edit.cshtml")
+    <script type="text/javascript">
+        $(function () {
+            $('#FromClassID').combotree('setValues', [@(Model.FromClassID)]);
+        });
+        function Info_Save(id) {
+            $("#ActionGUID").val(id);
+            submit();
+        }
+    </script>
+}
+<body class="easyui-layout">
+    <div data-options="region:'center',border:true">
+        @using (Html.BeginRouteForm("Admin_MapRoute_ModuleMenuID", new { action = "Save", @MvcClassID = ViewData["MvcClassID"], @MvcMarkName = ViewData["MvcMarkName"], @MvcTemplate = ViewData["MvcTemplate"] }, FormMethod.Post, new { ID = "EditForm", name = "EditForm", fit = "true", style = "width:100%;height:100%;" }))
+        {
+            @Html.ValidationSummary()
+            @Html.AntiForgeryToken()
+            @Html.Hidden("ActionGUID", "")
+            @Html.Hidden("Template", ViewData["Template"])
+            @Html.Hidden("MvcMarkName", ViewData["MvcMarkName"])
+            @Html.Hidden("MvcClassID", ViewData["MvcClassID"])
+            @Html.HiddenFor(m => m.ID)
+            @Html.HiddenFor(m => m.GUID)
+            @Html.HiddenFor(m => m.MarkName)
+            @Html.HiddenFor(m => m.UpdateTime)
+            @Html.HiddenFor(m => m.CreateUser)
+            @Html.HiddenFor(m => m.UserGUID)
+            @Html.HiddenFor(m => m.UpdateUser)
+            @Html.HiddenFor(m => m.NumItem)
+            <div class="easyui-tabs" data-options="border:false,fit:true">
+                <div title=" 中文版" style="padding: 3px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright">
+                                ID GUID：
+                            </th>
+                            <td>
+                                @(Model.ID) 【@(Model.GUID.ToString().ToUpper())】
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright" style="width: 100px;">
+                                所属分类：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.ClassID, new { @class = "easyui-combotree textbox", @style = "width:300px;", @required = "true", @url = Url.RouteUrl("Admin.Default", new { action = "GetCombotree", MarkName = "NEWS" }) })<span class="ico-Tree"></span> 排序：@Html.TextBoxFor(t => t.Orders, new { Class = "easyui-numberbox w40 ", required = "true" })
+                                （由低 -> 高）
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                标 题：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(t => t.Title, new { @Class = "easyui-validatebox textbox w500 Title ", required = "true" })
+                                简标题：@Html.TextBoxFor(t => t.SubTitle, new { Class = "easyui-validatebox textbox w300" })
+                            </td>
+                        </tr>
+                        <tr id="IsGoUrl" class="hide">
+                            <th class="tdright">
+                                跳转地址：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(t => t.LinkUrl, new { Class = "easyui-validatebox textbox w400" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th class="tdright" style="width: 100px;">
+                                缩略图：
+                            </th>
+                            <td>
+                                <img src="@(Model.Images)" width="100" id="Images_Show" class="screenshot">
+                                <span id="imghtml"></span>
+                                <script type="text/javascript">
+                                    $(function () {
+                                        var img = new Image();
+                                        img.src = "@(Model.Images)";
+                                        img.onload = function () {
+                                            $("#imghtml").html('宽：' + img.width + ' px 高：' + img.height + " px " + img.fileSize + " KB");
+                                        };
+                                    });
+                                </script>
+                                <br>
+                                @Html.TextBoxFor(t => t.Images, new { @class = "easyui-validatebox textbox w500 " })
+                                @Html.Raw(Html.UploadDialog(1, "Images", "图片上传", "", JieYiGuang.Web.UI.Class.UpLoad.UploadModel.UpdateFileType(JieYiGuang.Web.UI.Class.UpLoad.UploadType.Image)))
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                描　述：
+                            </th>
+                            <td>
+                                @Html.TextAreaFor(t => t.Descriptions, new { Class = "easyui-validatebox textbox w500 h80" })
+                                <a href="javascript:formatDescriptions('Contents', 'Descriptions', 100);" class="easyui-linkbutton">获取描述</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                内　容：
+                            </th>
+                            <td>
+                                <div class="box">
+                                    <input id="IsFirstImage" name="IsFirstImage" type="checkbox" value="true" />
+                                    <label for="IsFirstImage">
+                                        提取第一个图片为缩略图
+                                    </label>
+                                    <input id="IsLoadImg" name="IsLoadImg" type="checkbox" value="true" />
+                                    <label for="IsLoadImg">
+                                        下载所有图片
+                                    </label>
+                                </div>
+                                @Html.WebEditor(t => t.Contents, "Default", 800, 420)
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                信息状态：
+                            </th>
+                            <td>
+                                @Html.DropDownListFor(t => t.MarkStatus, JieYiGuang.Model.SelectItem.GetSelectListItem(JieYiGuang.Model.Dictionary.IsStatus), new { @class = "easyui-combobox", @style = "width:120px;" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright" width="100">
+                                SEO标题：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.SeoTitle, new { @class = "easyui-validatebox textbox w500" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                SEO关键字：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.SeoKeywords, new { @class = "easyui-validatebox textbox w500" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                SEO描述：
+                            </th>
+                            <td>
+                                @Html.TextAreaFor(m => m.SeoDescription, new { @class = "easyui-validatebox textbox w500 h80" })
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div title=" 英文版" style="padding: 3px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright">
+                                标 题：
+                            </th>
+                            <td>
+                                @Html.TextBox("TitleEn", newsEn.Title, new { @Class = "easyui-validatebox textbox w500 Title ", required = "true" })
+                                简标题：@Html.TextBox("SubTitleEn", newsEn.SubTitle, new { Class = "easyui-validatebox textbox w300" })
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th class="tdright" style="width: 100px;">
+                                缩略图：
+                            </th>
+                            <td>
+                                <img src="@(newsEn.Images)" width="100" id="Images_Show" class="screenshot">
+                                <span id="imgenhtml"></span>
+                                <script type="text/javascript">
+                                    $(function () {
+                                        var img = new Image();
+                                        img.src = "@(newsEn.Images)";
+                                        img.onload = function () {
+                                            $("#imgenhtml").html('宽：' + img.width + ' px 高：' + img.height + " px " + img.fileSize + " KB");
+                                        };
+                                    });
+                                </script>
+                                <br>
+                                @Html.TextBox("ImagesEn", newsEn.Images, new { @class = "easyui-validatebox textbox w500 " })
+                                @Html.Raw(Html.UploadDialog(1, "ImagesEn", "图片上传", "", JieYiGuang.Web.UI.Class.UpLoad.UploadModel.UpdateFileType(JieYiGuang.Web.UI.Class.UpLoad.UploadType.Image)))
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                描　述：
+                            </th>
+                            <td>
+                                @Html.TextArea("DescriptionsEn", newsEn.Descriptions, new { Class = "easyui-validatebox textbox w500 h80" })
+                                <a href="javascript:formatDescriptions('Contents', 'Descriptions', 100);" class="easyui-linkbutton">获取描述</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                内　容：
+                            </th>
+                            <td>
+                                <div class="box">
+                                    <input id="IsFirstImage" name="IsFirstImage" type="checkbox" value="true" />
+                                    <label for="IsFirstImage">
+                                        提取第一个图片为缩略图
+                                    </label>
+                                    <input id="IsLoadImg" name="IsLoadImg" type="checkbox" value="true" />
+                                    <label for="IsLoadImg">
+                                        下载所有图片
+                                    </label>
+                                </div>
+                                @Html.WebEditorEn(t => newsEn.Contents, "Default", 800, 420, "ContentsEn", newsEn.Contents)
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright" width="100">
+                                SEO标题：
+                            </th>
+                            <td>
+                                @Html.TextBox("SeoTitleEn", newsEn.Descriptions, new { @class = "easyui-validatebox textbox w500" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                SEO关键字：
+                            </th>
+                            <td>
+                                @Html.TextBox("SeoKeywordsEn", newsEn.Descriptions, new { @class = "easyui-validatebox textbox w500" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                SEO描述：
+                            </th>
+                            <td>
+                                @Html.TextArea("SeoDescriptionEn", newsEn.SeoDescription, new { @class = "easyui-validatebox textbox w500 h80" })
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                @*<div title="资源列表" style="padding: 3px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright" style="width: 100px;">
+                                缩略图：
+                            </th>
+                            <td>
+                                <img src="@(Model.Images)" width="100" id="Images_Show" class="screenshot">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                资源标题：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(t => t.ItemTitle, new { @Class = "easyui-validatebox textbox w500 Title " })
+                            </td>
+                        </tr>
+                    </table>
+                    @Html.Partial(ViewData["BasePath"] + "/ItemList.cshtml", Model.GUID)
+                </div>*@
+                @*<div title="扩展属性" style="padding: 3px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright" style="width: 100px;">
+                                标题颜色：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(t => t.Style, new { Class = "easyui-validatebox textbox w120" })
+                                <a href="javascript:ColorPicker('colorpicker', 'Style');" class="easyui-linkbutton" id="colorpicker">打开取色器</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                来 源：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(t => t.Source, new { @id = "Source", Class = "easyui-validatebox textbox w120" })
+                                &nbsp;&nbsp; 作 者：
+                                @Html.TextBoxFor(t => t.Author, new { Class = "easyui-validatebox textbox w120" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                查看次数：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(t => t.Hits, new { @class = "easyui-numberbox textbox w40", @required = "true" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                发布时间：
+                            </th>
+                            <td>
+                                @Html.TextBox("CreateTime", Model.CreateTime.ToString("yyyy-MM-dd HH:mm:ss"), new { @class = "easyui-datetimebox textbox w160", @required = "true" })
+                            </td>
+                        </tr>
+                    </table>
+                </div>*@
+                @*<div title="SEO属性" style="padding: 3px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright" width="100">
+                                SEO标题：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.SeoTitle, new { @class = "easyui-validatebox textbox w500" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                SEO关键字：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.SeoKeywords, new { @class = "easyui-validatebox textbox w500" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                SEO描述：
+                            </th>
+                            <td>
+                                @Html.TextAreaFor(m => m.SeoDescription, new { @class = "easyui-validatebox textbox w500 h80" })
+                            </td>
+                        </tr>
+                    </table>
+                </div>*@
+
+            </div>
+        }
+    </div>
+    <div class="dialog-button TextCenter" data-options="region:'south',border:false">
+        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-ok',plain:false" onclick="return Info_Save('603509d5-5a23-4d18-9b42-d9191c863a39');">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="return window.parent.cancel();">取消</a>
+    </div>
+</body>

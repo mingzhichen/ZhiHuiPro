@@ -1,0 +1,146 @@
+﻿@model Guid
+<div id="grid-list" title="信息列表" border="true" style="width:800px;height:360px;"></div>
+<div id="edit-window" title="编辑/添加" class="easyui-window" data-options="modal:true,closed:true" style="width:90%; height:90%; padding:6px;"></div>
+<div id="tbitem" style="height: auto">
+    <div class="toolbar">
+        <ul>
+            <li><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false" onclick="return InfoItem_Add('7ed0411a-f3e6-4e48-a813-a5a6346344f1');">添加</a></li>
+            <li class="datagrid-btn-separator"></li>
+            <li><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-reload',plain:false" onclick="return refreshGrid();">刷新</a></li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var MvcTemplate = '@(ViewData["MvcTemplate"])';
+    var MvcMarkName = '@(ViewData["MvcMarkName"])';
+    var MvcClassID = '@(ViewData["MvcClassID"])';
+
+    $(function () {
+        //初始化列表
+        grid = $('#grid-list').datagrid({
+            striped: true, //是否显示斑马线效果。
+            fitColumns: true, //真正的自动展开/收缩列的大小，以适应网格的宽度，防止水平滚动。
+            autoRowHeight: true, //定义设置行的高度，根据该行的内容。设置为false可以提高负载性能。
+            loadMsg: "数据加载中，请稍后……",
+            url: 'ItemList-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?InfoGUID=@(Model)',
+            pageSize: 5,
+            pageList: [5, 10, 20],
+            pagination: true, //分页控件
+            nowrap: true,
+            rownumbers: false, //行号
+            animate: true,
+            collapsible: true,
+            fit: false, //自动大小
+            singleSelect: true, //是否单选
+            idField: 'ID',
+            treeField: 'Title',
+            toolbar: "#tbitem",
+            frozenColumns: [[
+                        { field: 'ID', title: 'ID', width: 40, align: 'center' },
+                        { field: 'Path', title: '图片', width: 70, align: 'center', formatter: function (value, row, index) { if (value != null) { return "<a class='group' href='" + value + "'><img src='" + value + "' onload='AutoResizeImage(50,50,this)'  style='max-width:50px;max-height:20px;padding:1px;border:1px solid #ccc;margin-top:8px;'/></a>"; } } },
+                        { field: 'Title', title: '标题名称', width: 220, align: 'left' },
+                        {
+                            field: 'Action', title: '操作', width: 160, align: 'center',
+                            formatter: function (value, row, index) {
+                                var rowid = row.ID;
+                                var defaultImages = "<a href=\"#\" onclick=\"SetDefaultImages('" + row.Url + "')\">[设缩略]</a> ";
+                                return defaultImages + '<a href="javascript:InfoItem_Edit(\'a50a1960-a8bf-4f13-8d2f-b3e92d2216be\', rowid);">[修改]</a><a href="javascript:InfoItem_Remove(\'99187938-d7e5-41c9-bc59-5e69d36732f2\', rowid);">[删除]</a>'.replaceAll("rowid", rowid);
+                            }
+                        },
+                        { field: 'MarkStatus', title: '状态', width: 40, align: 'center', formatter: function (value, row, index) { return "<a class=\"icon icon-n-status" + value + "\" title=\"" + row.E_MarkStatusTitle.replace(/<[^>]+>/gi, '') + "\"></a>"; } },
+                        {
+                            field: 'CreateTime', title: '发布时间', width: 140, align: 'center',
+                            formatter: function (value, row, index) {
+                                return FormatTime(value, "yyyy-MM-dd hh:mm:ss");
+                            }
+                        },
+                        {
+                            field: 'UpdateTime', title: '更新时间', width: 140, align: 'center',
+                            formatter: function (value, row, index) {
+                                return FormatTime(value, "yyyy-MM-dd hh:mm:ss");
+                            }
+                        }
+
+            ]],
+            onLoadError: function () {
+                msgShow("操作失败", "发生错误,获取列表失败！", "error");
+            },
+            onLoadSuccess: function (data) {
+                bindFancybox();
+                $("#NumItem").val(data.total);
+            }
+        });
+        grid.datagrid('getPager').pagination({
+            showPageList: true,
+            showRefresh: true,
+            beforePageText: "第",
+            afterPageText: "页 ，共 <span class=\"red\">{pages}</span> 页",
+            displayMsg: '当前 <span class=\"red\">{from}</span> 到 <span class=\"red\">{to}</span> 条，总共 <span class=\"red\">{total}</span> 条'
+        });
+        $('body').layout();
+    });
+
+    //设置默认图片
+    function SetDefaultImages(img) {
+        $("#Images").val(img);
+        $("#Images_Show").attr("src", img);
+    }
+
+    //搜索
+    function btnSearch() {
+        grid.datagrid("load");
+        bindFancybox();
+    }
+
+    //获得选中列表个数
+    function getSelectedArr(id) {
+        var ids = [];
+        var rows = grid.datagrid('getSelections');
+        if (id == 0) {
+            for (var i = 0; i < rows.length; i++) {
+                ids.push("'" + rows[i].ID + "'");
+            }
+        }
+        else {
+            ids.push(id);
+        }
+        return ids;
+    }
+
+    //关联 添加
+    function InfoItem_Add(id) {
+        dialogWin = openWindow("#edit-window", "编辑关联信息", 'EditItem-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?InfoGUID=@(Model)', "icon-add").dialog('open');
+    }
+    //关联 编辑
+    function InfoItem_Edit(id, rowid) {
+        dialogWin = openWindow("#edit-window", "编辑关联信息", 'EditItem-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?InfoGUID=@(Model)' + "&InfoID=" + rowid, "icon-add").dialog('open');
+    }
+    //关联 删除
+    function InfoItem_Remove(id, rowid) {
+        $.messager.confirm("删除确认", "您确定要删除这条关联信息吗？", function (b) {
+            if (b) {
+                ajaxAction('RemoveItem-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?InfoGUID=@(Model)' + '&InfoID=' + rowid, 'post', 100000);
+            }
+        });
+    }
+    //关闭编辑窗口并刷新列表
+    function close() {
+        dialogWin.dialog('close');
+        refreshGrid();
+    }
+
+    //关闭编辑窗口
+    function cancel() {
+        dialogWin.dialog('close');
+    }
+
+    //刷新列表
+    function refreshGrid() {
+        if (dialogWin != undefined && dialogWin != null) {
+            dialogWin.dialog('close');
+        }
+        grid.datagrid('reload');
+        grid.datagrid('clearSelections');
+        $("input[type='checkbox']").eq(0).attr("checked", false);
+    }
+</script>

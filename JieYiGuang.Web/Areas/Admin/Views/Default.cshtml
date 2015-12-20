@@ -1,0 +1,138 @@
+﻿@{
+    ViewBag.Title = "";
+    Layout = "~/areas/admin/Views/Layout/_Layout_Base.cshtml";
+    var Login_Info = ViewData["Login_Info"] as JieYiGuang.Model.T_AdminUser;
+}
+@section Head{
+    <script type="text/javascript">
+        var IndexMenu = "0c84924c-95fa-4339-bc8d-619d049c6097";
+
+        $(function () {
+            SwitchNav(IndexMenu);
+            ServerCurrentTime();
+            windowResize();
+            $(window).resize(function () { windowResize() })
+            //退出后台
+            $('#loginOut').click(function () {
+                $.messager.confirm('系统提示', '您确定要退出本次登录吗?', function (r) {
+                    if (r) {
+                        location.href = '/Admin/LoginOut.html';
+                    }
+                });
+            });
+        });
+
+        function SwitchNav(Id) {
+            IndexMenu = Id
+            $("#navmenu li").removeClass("navmenu_onclick");
+            $("#man_nav_" + Id).addClass("navmenu_onclick");
+            IndexMenu = Id;
+            InitLeftMenu(Id);
+        }
+
+        function getWindowHeight() { return $(window).height() };
+        function getWindowWidth() { return $(window).width() };
+        function windowResize() {
+            var width = getWindowWidth(); var height = getWindowHeight();
+            $('#subWrap').layout('panel', 'north').panel('resize', { height: height });
+            $('form#formWidows').width(width); $('form#formWidows').height(height); $('.easyui-layout').layout()
+        };
+
+        //服务器当前日期
+        function ServerCurrentTime() {
+            var now = new Date();
+            var year = now.getFullYear();
+            var month = now.getMonth();
+            var date = now.getDate();
+            var day = now.getDay();
+            var hour = now.getHours();
+            var minu = now.getMinutes();
+            var sec = now.getSeconds();
+            var week;
+            month = month + 1;
+            if (month < 10) month = "0" + month;
+            if (date < 10) date = "0" + date;
+            if (hour < 10) hour = "0" + hour;
+            if (minu < 10) minu = "0" + minu;
+            if (sec < 10) sec = "0" + sec;
+            var arr_week = new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
+            week = arr_week[day];
+            var time = "";
+            time = year + "年" + month + "月" + date + "日" + " " + hour + ":" + minu + ":" + sec;
+            $("#CurrentTime").text(time);
+            var timer = setTimeout("ServerCurrentTime()", 1000);
+        }
+    </script>
+}
+<body class="easyui-layout">
+    <noscript>
+        <div style="position: absolute; z-index: 100000; height: 2046px; top: 0px; left: 0px; width: 100%; background: white; text-align: center;"><img src="/App_Themes/Skins/Default/Images/noscript.gif" alt='抱歉，请开启脚本支持！' /> </div>
+    </noscript>
+
+    <!-- 头部 -->
+    <div data-options="region:'north',border:false,split:true" id="header_content">
+        <div id="logo">
+            <div id="navtext">
+                <ul>
+                    <li>
+                        <a href="javascript:void(0)" onclick="javascript:ShowPasswordDialog()" id="editpass">[修改密码]</a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="addTab('在线帮助', 'userGuid.htm', 'icon icon-help')" id="editpass" title="在线帮助"></a>
+                    </li>
+                    <li>
+                        <a href="@(Url.RouteUrl("Admin.Default", new { action = "LoginOut" }))" id="loginOut">[安全退出]</a>
+                    </li>
+                    <li>
+                        欢迎您,<strong class="green">@(Login_Info.UserName)(@(Login_Info.Name))</strong>，您好！
+                    </li>
+                </ul>
+            </div>
+            <div id="navmenu">
+                <ul>
+                    <li id="man_nav_1d3d71c4-15c7-40dd-8051-7b370bdac070" onclick="SwitchNav('1d3d71c4-15c7-40dd-8051-7b370bdac070')" class=""><a>信息管理</a><span class="lt"></span><span class="rt"></span></li>
+			        <li id="man_nav_6d36d435-7cc4-4165-955b-c1a5657950b6" onclick="SwitchNav('6d36d435-7cc4-4165-955b-c1a5657950b6')" class=""><a>系统管理</a><span class="lt"></span><span class="rt"></span></li>
+                    <li class="date">
+                        当前时间：<b id="date"></b>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 左侧导航菜单 -->
+    <div data-options="region:'west',split:true,title:'导航菜单'" style="width: 200px; height:100%; background-color:#fff; padding:1px;overflow:hidden;">
+        <div id="tabs" class="easyui-accordion" style="background-color:#fff;" data-options="fit:true,border:false">
+
+        </div>
+    </div>
+
+    <!-- 主工作区 -->
+    <div data-options="region:'center',border:false" style="overflow:hidden;">
+        <div id="mainTab" class="easyui-tabs" data-options="fit:true,border:true" style="overflow:hidden;">
+            <div title="我的桌面" style="overflow: hidden; background:#fff;padding:5px;">
+
+            </div>
+        </div>
+    </div>
+
+    <!--Tab上菜单操作-->
+    <div id="tab_menu" class="easyui-menu" style="width:150px;">
+        <div id="tab_menu-tabupdate">刷新</div>
+        <div class="menu-sep"></div>
+        <div id="tab_menu-tabclose">关闭</div>
+        <div id="tab_menu-tabcloseall">全部关闭</div>
+        <div id="tab_menu-tabcloseother">除此之外全部关闭</div>
+        <div class="menu-sep"></div>
+        <div id="tab_menu-tabcloseright">当前页右侧全部关闭</div>
+        <div id="tab_menu-tabcloseleft">当前页左侧全部关闭</div>
+        <div class="menu-sep"></div>
+        <div id="tab_menu-exit">退出</div>
+    </div>
+
+    <!-- 底部版权标识 -->
+    <div id="bottom_content" data-options="region:'south',border:false,split:true">Copyright © 2008-2012 www.BTXStudio.com Co., Ltd. All Rights Reserved. </div>
+
+
+</body>

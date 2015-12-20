@@ -1,0 +1,397 @@
+﻿@{
+    Layout = "~/areas/admin/Views/Layout/_Layout_Base.cshtml";
+}
+@section Head{
+    <script type="text/javascript">
+    <!--
+        var MvcTemplate = '@(ViewData["MvcTemplate"])';
+        var MvcMarkName = '@(ViewData["MvcMarkName"])';
+        var MvcClassID = '@(ViewData["MvcClassID"])';
+
+        $(function (){
+
+            // 初始化-标签页
+            var tabs = $('#tabs').tabs();
+            $('#tabs').click(function () { // 绑定单击事件
+                $("#SearchMarkStatus").val(tabs.tabs('getSelected').panel('options').id);
+                btnSearch();
+            });
+            //初始化-批量操作窗口
+            arraylistWin = $('#arraylist-window').window({
+                iconCls: 'icon-redo',
+                closed: true,
+                modal: false
+            });
+            //初始化-分类树
+            tree = $('#tree').tree({
+                checkbox: false,
+                methord:'get',
+                url: '@Url.RouteUrl("Admin.Default", new { action = "GetCombotree", MarkName = "NEWS", ParentID = ViewData["MvcClassID"] })',
+                onClick: function (node) {
+                    clickTree(node.id);
+                },
+                onContextMenu: function (e, node) {
+                    e.preventDefault();
+                    $('#tree').tree('select', node.target);
+                    $('#tree_menu').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                }
+            });
+            //初始化-列表
+            btnSearch();
+        });
+        //信息列表
+        function loadData(params)
+        {
+            return $('#grid-list').datagrid({
+                height: 'auto',
+                width: function () { return document.body.clientWidth * 0.9 },
+                iconCls: 'icon-computer',
+                loadMsg: "数据加载中，请稍后……",
+                url: 'List-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx',
+                autoRowHeight: false,
+                striped: true,//显示斑马线效果
+                pagination: true, //分页控件
+                pageSize: 10,
+                pageList: [10, 50, 100],
+                pagePosition: 'bottom',//分页工具栏的位置
+                //rownumbers: true, //行号
+                fit: true, //自动大小
+                checkOnSelect: true,//选中复选框关联
+                singleSelect: false,//只能选中一行
+                queryParams: params,
+                idField: 'ID',//设置主键列
+                //冻结列
+                frozenColumns: [[
+	                { field: 'ck', checkbox: true, width: 40 },
+                    { field: 'ID', title: 'ID', width: 40, align: 'center', sortable: true }
+                ]],
+                //滚动列
+                columns: [[
+                    { field: 'Images', title: '', width: 24, align: 'center', formatter: function (value, row, index) { if (row.Images != null) { return "<a class=\"Image screenshot group\" href=\"" + row.Images + "\"></a>"; } } },
+//                    { field: 'E_ItemTitle', title: '项目', width: 40, align: 'center' },
+	                { field: 'Title', title: '标题名称', width: 300, align: 'left', formatter: function (value, row, index) { return SearchKey(value, $("#SearchKey").val()) } },
+//                    { field: 'E_MarkHotTitle', title: '置顶', width: 60, align: 'center' },
+//                    { field: 'E_FlagsTitle', title: '属性', width: 120, align: 'center' },
+                    { field: 'ClassID', title: '所属分类', width: 120, align: 'center', sortable: true, formatter: function (value, row, index) { return "<b style='color:#f00;'>" + row.E_ClassTitle + "</b>"; } },
+                    { field: 'MarkStatus', title: '状态', width: 32, align: 'center', formatter: function (value, row, index) { return "<a class=\"icon icon-status" + value + "\" title=\"" + row.E_MarkStatusTitle.replace(/<[^>]+>/gi, '') + "\"></a>"; } },
+                    {
+                        field: 'Action', title: '操作', width: 100, align: 'center',
+                        formatter: function (value, row, index) {
+                            var rowid = row.ID;
+                            return '<a href="javascript:Info_Edit(\'53fdc1f1-e4e6-479c-a345-cec49f467d48\', rowid);">[修改]</a><a href="javascript:Info_Remove(\'85176947-3c61-4b02-ac79-79c0c686b8e0\', rowid);">[删除]</a>'.replaceAll("rowid", rowid);
+                        }
+                    },
+                    { field: 'NumItem', title: '关联', width: 40, align: 'center', formatter: function (value, row, index) { return "<b style='color:#f00;'>" + value + "</b>"; } },
+                    { field: 'Orders', title: '排序', width: 40, align: 'center' },
+                    { field: 'Hits', title: '查看', width: 40, align: 'center' },
+                    { field: 'CreateUser', title: '操作员', width: 60, align: 'center' },
+                    { field: 'CreateTime', title: '创建时间', width: 140, align: 'center', formatter: function (value, row, index) { return FormatTime(value, "yyyy-MM-dd hh:mm:ss"); } },
+                    { field: 'UpdateTime', title: '更新时间', width: 140, align: 'center', formatter: function (value, row, index) { return FormatTime(value, "yyyy-MM-dd hh:mm:ss"); } }
+                ]],
+                //扩展信息
+                view: detailview,
+                detailFormatter: function (rowIndex, rowData) {
+                    var info = '<div class="ddv" style="padding:5px 0">GUID：' + rowData.GUID + '</div>';
+                    info += '标题：' + rowData.Title + '';
+                    return info;
+                },
+                onLoadSuccess: function (data) {
+                    bindFancybox();
+                },
+                //双击操作
+                onDblClickRow: function (rowIndex, rowData) {
+                    var rowid = rowData.ID;
+                    Info_Edit('53fdc1f1-e4e6-479c-a345-cec49f467d48', rowid);
+                },
+                //失败操作
+                onLoadError: function () {
+                    msgShow("操作失败", "发生错误,获取列表失败！", "error");
+                }
+            });
+        }
+        //参数
+        function queryParams()
+        {
+            var queryParams = {
+                SearchClassID :$("#SearchClassID").val(),
+                SearchMarkStatus :$("#SearchMarkStatus").val(),
+                SearchName: $('#SearchBox').searchbox('getName'),
+                SearchKey: $('#SearchBox').searchbox('getValue'),
+                SearchMarkName: "@(ViewData["MvcMarkName"])"
+            };
+            return queryParams;
+        }
+        //搜索
+        function doSearch(value, name) {
+            btnSearch();
+        }
+        function btnSearch()
+        {
+            grid=loadData(queryParams());
+            grid.datagrid('getPager').pagination({
+                showPageList: true,
+                showRefresh: true,
+                beforePageText: "第",
+                afterPageText: "页 ，共 <span class=\"red\">{pages}</span> 页",
+                displayMsg: '当前 <span class=\"red\">{from}</span> 到 <span class=\"red\">{to}</span> 条，总共 <span class=\"red\">{total}</span> 条'
+            });
+            $('body').layout();
+        }
+        //菜单树触发
+        function clickTree(nodeid)
+        {
+            $("#SearchClassID").val(nodeid);
+            btnSearch();
+        }
+        //获得选中列表个数
+        function getSelectedArr(id) {
+            var ids = [];
+            var rows = grid.datagrid('getSelections');
+            if (id == 0)
+            {
+                for (var i = 0; i < rows.length; i++) {
+                    ids.push(rows[i].ID);
+                }
+            }
+            else
+            {
+                ids.push(id);
+            }
+            return ids;
+        }
+        //操作
+        function ManageArrayActionsList(confirmtitle, doAction) {
+            $("#ActionsTitle").html(confirmtitle);
+            $("#Actions").val(doAction);
+            $("#action").hide();
+            $("#actionTo").show();
+        }
+        function ManageArrayActionsCancel() {
+            $("#Actions").val("");
+            $('#ToClassID').combotree('setValue', 0);
+            $("#action").show();
+            $("#actionTo").hide();
+        }
+        function ManageArrayActionsOk() {
+            var doClassID = $('#ToClassID').combotree('getValue');
+            if (doClassID == "0") {
+                msgShow("警告", "请选择操作分类", "warning");
+            }
+            else {
+                ManageArrayActions(0, $("#ActionsTitle").html(), $("#Actions").val(), doClassID);
+                $("#action").show();
+                $("#actionTo").hide();
+            }
+        }
+        //重置
+        function resetGrid() {
+            grid.treegrid('clearSelections');
+            $("input[type='checkbox']").eq(0).attr("checked", false);
+        }
+        //关闭编辑窗口
+        function closeWin() {
+            if (arraylistWin != null && arraylistWin!=undefined) { arraylistWin.dialog('close'); }
+            if (dialogWin != null && dialogWin!=undefined) { dialogWin.dialog('close'); }
+        }
+        //刷新列表并回到首页
+        function close() {
+            resetGrid();
+            closeWin();
+            grid.datagrid('load');
+        }
+        //取消
+        function cancel() {
+            closeWin();
+        }
+        //刷新列表
+        function refreshGrid() {
+            resetGrid();
+            closeWin();
+            grid.datagrid('reload');
+        }
+        //获得选中列表个数
+        function getSelectedArr(id) {
+            var ids = [];
+            var rows = grid.datagrid('getSelections');
+            if (id == 0) {
+
+                for (var i = 0; i < rows.length; i++) {
+                    ids.push(rows[i].ID);
+                }
+            }
+            else {
+                ids.push(id);
+            }
+            return ids;
+        }
+        //添加
+        function Info_Add(actionId) {
+            dialogWin = openWindow("#form-window", "编辑功能记录", 'Edit-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx', "icon-add").dialog('open');
+        }
+        //编辑
+        function Info_Edit(actionId, rowId) {
+            if (rowId == undefined) {
+                var idArray = getSelectedArr(0);
+            } else {
+                var idArray = getSelectedArr(rowId);
+            }
+            if (idArray.length == 1) {
+                dialogWin = openWindow("#form-window", "编辑功能记录", 'Edit-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?InfoID=' + idArray[0], "icon-add").dialog('open');
+            }
+            else{
+                msgShow('提示', '请至少且只能选择一条记录进行操作!', 'info');
+            }
+            return;
+
+
+        }
+        //删除
+        function Info_Remove(actionId, rowId) {
+            if (rowId == undefined)
+            {
+                var idArray = getSelectedArr(0);
+            } else
+            {
+                var idArray = getSelectedArr(rowId);
+            }
+            if (idArray.length == 0) {
+                $.messager.alert("操作错误", "请选择要进行操作的记录！");
+            } else {
+                $.messager.confirm("删除确认", "您确定要【删除】这条记录吗？", function (b) {
+                    if (b) {
+                        ajaxAction('Remove-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?InfoID=' + idArray[0], 'post', 100000);
+                    }
+                });
+            }
+        }
+        //批量
+        function Info_Top0(id) { Top(id,0); }
+        function Info_Top1(id) { Top(id,1); }
+        function Info_Top2(id) { Top(id,2); }
+        function Info_Top3(id) { Top(id,3); }
+        function Info_Top4(id) { Top(id,4); }
+        function Info_Top5(id) { Top(id,5); }
+        function Info_Top6(id) { Top(id,6); }
+        function Top(id, type) {
+            var idArray = getSelectedArr(0);
+            if (idArray.length == 0) {
+                $.messager.alert("操作错误", "请选择要进行操作的记录！");
+            } else {
+                ajaxAction('ManageArrayAction-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?MarkType=Top' + type + '&InfoID=' + idArray.join(','), 'post', 100000);
+            }
+        }
+        function Info_ArrayAction(id) {
+            var idArray = getSelectedArr(0);
+            if (idArray.length == 0) {
+                $.messager.alert("操作错误", "请选择要进行操作的记录！");
+            } else {
+                var MarkStatus=$("#MarkStatus").combobox('getValue');
+                ajaxAction('ManageArrayAction-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?MarkType=FetchStatus&MarkStatus=' + MarkStatus + '&InfoID=' + idArray.join(','), 'post', 100000);
+            }
+        }
+        function Index(type) {
+            var idArray = getSelectedArr(0);
+            if (idArray.length == 0) {
+                $.messager.alert("操作错误", "请选择要进行操作的记录！");
+            } else {
+                ajaxAction('ManageArrayAction-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?MarkType=FETCHINDEX&Indexs=' + type + '&InfoID=' + idArray.join(','), 'post', 100000);
+            }
+        }
+    // -->
+    </script>
+}
+<body>
+    <div title="※ 分类树" data-options="region:'west',split:true,collapsed:true" style="width: 180px;">
+        <ul id="tree"></ul>
+    </div>
+    <div data-options="region:'center'">
+        <div id="grid-list" title="※ 信息列表" data-options="toolbar:'#tb',border:false"></div>
+    </div>
+</body>
+<div id="tb" style="height: auto">
+    <div id="tabs" class="easyui-tabs menu-tabs" data-options="border:false">
+        @foreach (var item in JieYiGuang.Model.SelectItem.GetSelectListItem(JieYiGuang.Model.Dictionary.IsStatus))
+        {
+            <div title="@item.Text" id="@item.Value"></div>
+        }
+        <div title="全部" id="9999"></div>
+    </div>
+    <div class="toolbar">
+        <ul>
+            <li><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:false" onclick="return Info_Add('041c9269-7084-4f62-b4ec-159cdafbe1c5');">添加</a></li>
+            <li class="datagrid-btn-separator"></li>
+            <li><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-redo',plain:false" onclick="return arraylistWin.window('open');">批量操作</a></li>
+            <li class="datagrid-btn-separator"></li>
+            <li><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-reload',plain:false" onclick="return refreshGrid();">刷新</a></li>
+        </ul>
+        <div class="search">
+            @{
+                <text>
+                    <input type="hidden" name="SearchClassID" id="SearchClassID" value="@(ViewData["MvcClassID"])" />
+                    <input type="hidden" name="SearchMarkStatus" id="SearchMarkStatus" value="0" />
+                    <input type="hidden" name="SearchKey" id="SearchKey" value="" />
+                    <input type="hidden" name="SearchName" id="SearchName" value="" />
+                    @*推荐状态：@(Html.GetClassSelect<BtxCMS.Models.T_ClassRecommend>("推荐状态", "SearchRecommendID", 3, 0))*@
+                    <input class="easyui-searchbox" data-options="prompt:'关键字',searcher:doSearch,menu:'#mm'" id="SearchBox" style="width:300px" />
+                    <div id="mm">
+                        <div data-options="name:'ALL',iconCls:'icon-ok'">全部</div>
+                        <div data-options="name:'ID'">ID</div>
+                        <div data-options="name:'Title'">标题</div>
+                        <div data-options="name:'AdminOperator'">操作员</div>
+                    </div>
+                </text>
+            }
+        </div>
+    </div>
+</div>
+<div id="arraylist-window" title="批量操作" class="easyui-window" data-options="modal:true,closed:true" style="width: 600px; height: 280px; padding: 5px;">
+    <div class="easyui-layout" data-options="fit:true">
+        <div id="action" data-options="region:'center',border:false" style="padding: 10px; background: #fff; border: 1px solid #ccc; ">
+            <table class="table-options" fit="true" id="action">
+                <tr>
+                    <th class="tdleft">
+                        状态操作：
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        <select class="easyui-combobox" id="MarkStatus" name="MarkStatus" style="width:120px;"><option value="0">正常</option>
+                        <option value="10">锁定</option>
+                        <option value="20">待审核</option>
+                        <option value="30">过期</option>
+                        <option value="40">停用</option>
+                        <option value="-1">删除</option>
+                        </select>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:false" onclick="return Info_FetchStatus('ec8fc2cf-5d60-4d62-bbfc-21cfc3a4e89d');">批量修改状态</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="tdleft">
+                        置顶推荐操作：
+                    </th>
+                </tr>
+                <tr>
+                    <td class="">
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-cancel',plain:false" onclick="return Info_Top0('247baa22-becd-4d36-ac97-fe9fa7b6b665');">取消置顶</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-67-09',plain:false" onclick="return Info_Top1('1f3e4801-f0c4-4ee2-95e3-acb98ef46f93');">置顶1</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-67-09',plain:false" onclick="return Info_Top2('2f938431-69da-4a2d-b5aa-9c38e718ce96');">置顶2</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-67-09',plain:false" onclick="return Info_Top3('4c158d07-798e-4e3e-871c-231b6bfd9d46');">置顶3</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-67-09',plain:false" onclick="return Info_Top4('b2c89b80-c082-4959-9c14-9035b70b4709');">置顶4</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-67-09',plain:false" onclick="return Info_Top5('95610fe3-f458-46f2-aca5-baccfed36d49');">置顶5</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-67-09',plain:false" onclick="return Info_Top6('27420536-c42f-4af7-8435-8de7e28d8ab3');">置顶6</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="tdleft">
+                        页面推荐操作：
+                    </th>
+                </tr>
+                <tr>
+                    <td class="">
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-cancel',plain:false" onclick="return Index(0);">取消推荐</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-67-09',plain:false" onclick="return Index(1);">推荐首页</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="form-window" title="编辑/添加" class="easyui-window" data-options="modal:true,closed:true,fit:true" style="width: 80%; height: 80%; padding: 6px;"></div>
+

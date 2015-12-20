@@ -1,0 +1,7 @@
+﻿@model string
+<div class="left w200">
+    <img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/"+Model+".jpg")" width="242" height="90">
+    <div class="leftlink"> <a href="@(Url.Action("Product", "Home", new { ClassID = 5 }))"><img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/imgleftlink1.jpg")"></a> 
+    <a href="@(Url.Action("Message", "Home"))"><img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/imgleftlink2.jpg")"></a> 
+    <a href="@(Url.Action("Faq", "Home"))"><img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/imgleftlink3.jpg")"></a></div>
+</div>

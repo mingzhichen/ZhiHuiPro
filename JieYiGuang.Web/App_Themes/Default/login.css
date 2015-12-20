@@ -1,0 +1,43 @@
+﻿img{ border:none;}
+.fl{ float:left;}
+.fr{ float:right;}
+/* login */
+#Login-header{background: url("Images/Login/login-top-bg.gif" ) repeat-x;height: 41px; margin:0;}
+#Login-Lan{ text-align:right; padding:15px 15px 0 0; }
+#Login-Lan a{margin:0 5px 0 0;}
+#Login-Lan a.zh-CN{ background:url("Images/Icon/Language_CN.gif") no-repeat; width:16px; height:10px; display:inline-block;}
+#Login-Lan a.zh-TW{ background:url("Images/Icon/Language_HK.gif") no-repeat; width:16px; height:10px; display:inline-block;}
+#Login-Lan a.en-US{ background:url("Images/Icon/Language_EN.gif") no-repeat; width:16px; height:10px; display:inline-block;}
+#Login-Content{top:41px;background: url("Images/Login/login-bg.gif")  repeat-x; height:534px;}
+
+.Login-Window{background:url("Images/Login/Login-Center-Bg.gif") repeat-x;}
+
+.Login-Window #Login-Center-Left{float:left;background:url("Images/Login/Login-Center-left-Bg.gif") no-repeat;height:409px;width:360px;}
+.Login-Window #ContentText .logo{ padding-top:80px;}
+.Login-Window #ContentText{ text-align:left; margin:0 0 0 35px;}
+.Login-Window #ContentText ul{ margin:10px;}
+.Login-Window #ContentText ul li{ color:#7A7B7B;line-height:24px;list-style-type:disc; margin:0 0 0 30px;}
+.Login-Window #ContentText .help{ padding:10px 0 0 40px;}
+
+.Login-Window #Login-Center-Right{ float:left;height:409px;width:360px;}
+.Login-Window #loginForm{ padding:88px 0 0 30px;height:220px; line-height:26px; color:#516587;background:url("Images/Login/login-welcome.png") no-repeat bottom;_background:url("Images/Login/login-welcome-ie6.png") no-repeat bottom; }
+.Login-Window #loginForm-Title{ font-weight:bold; font-size:14px; padding-bottom:6px;}
+.Login-Window #loginForm-AdminLogin ul{padding:0px; margin:0px;}
+.Login-Window #loginForm-AdminLogin li{padding:0 0 0 10px;margin:2px 0px;list-style-type: none;}
+.Login-Window #loginForm-AdminLogin li span { width:50px; display:inline-block; text-align:right;}
+
+
+#imgVerify { margin:0 0 0 6px;}
+#IpAddress{ margin:5px 20px;}
+
+#Login-Bottom{background: url("Images/Login/login-buttom-bg.gif")  repeat-x;  height:20px; line-height:20px; margin-top:2px; }
+#copyright{background: url("Images/Login/login-copy.gif") no-repeat right;color:#93A1AB; text-align:center;height:20px; }
+/* input */
+.ButtomBG{background:url("Images/Login/login-buttom_bg.gif") no-repeat;width:72px; height:20px; line-height:20px; border:0px;color:#516587;cursor:pointer;}
+.Login-User{background:url("Images/Login/login-User.png") no-repeat 2px 2px; padding-left:20px!important;height:22px;}
+.Login-Pass{background:url("Images/Login/login-Key.png") no-repeat 6px 2px; padding-left:20px!important;height:22px;}
+/* indexFrom */
+#TopFrom{ background:url("Images/Login/From-Top-BG.gif") repeat-x; height:64px; width:auto;}
+#UpdateLoading{ width:250px;}
+
+.dialog-button{text-align:center!important;padding:0!important; padding-top:6px!important;padding-bottom:6px!important;}

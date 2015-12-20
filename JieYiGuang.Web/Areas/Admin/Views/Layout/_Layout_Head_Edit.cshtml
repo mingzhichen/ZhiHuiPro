@@ -1,0 +1,52 @@
+﻿<script type="text/javascript">
+    //ajax提交
+    function submitFrom() {
+        $.messager.progress();	// 显示进度条
+        $('#EditForm').form('submit', {
+            onSubmit: function () {
+                //提交前验证
+                var isValid = $(this).form('validate');
+                if (!isValid) {
+                    // 如果表单是无效的则隐藏进度条
+                    $.messager.progress('close');
+                }
+                // 返回false终止表单提交
+                return isValid;
+            },
+            success: function (data) {
+                // 如果提交成功则隐藏进度条
+                $.messager.progress('close');
+                var data = $.parseJSON(data);
+                if (data.success) {
+                    $.messager.alert('提示', data.message, 'info', function () {
+                        window.parent.refreshGrid();
+                    });
+                } else {
+                    $.messager.alert('错误', data.message, 'error');
+                }
+            }
+        });
+    }
+
+    //提交
+    function submit(){
+        //编辑器
+        @(Html.SetWebEditor())
+        submitFrom();
+    }
+
+    //保存
+    function Save() {
+        $("#IsSaveAs").val("False");
+        submit();
+    }
+
+    //另存为
+    function SaveAs() {
+        $("#IsSaveAs").val("True");
+        submit();
+    }
+
+    //初始化编辑器
+    @(Html.LoadWebEditor())
+</script>

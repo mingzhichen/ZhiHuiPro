@@ -1,0 +1,49 @@
+﻿@{
+    var themes = "gray";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="@(Url.Content("~/App_Themes/Default/default.css"))" />
+    <link rel="stylesheet" href="@(Url.Content("~/App_Themes/Default/icon.css"))" />
+    @*easyui*@
+    <link rel="stylesheet" href="@(Url.Content("~/App_Scripts/Jquery/plugin/jquery.easyui/themes/icon.css"))" />
+    <link rel="stylesheet" href="@(Url.Content("~/App_Scripts/Jquery/plugin/jquery.easyui/themes/" + themes + "/easyui.css"))" id="easyuiTheme" />
+    <script type="text/javascript" src="@(Url.Content("~/App_Scripts/Jquery/plugin/jquery.easyui/jquery.min.js"))"></script>
+    <script type="text/javascript" src="@(Url.Content("~/App_Scripts/Jquery/plugin/jquery.easyui/jquery.easyui.min.js"))"></script>
+    <script type="text/javascript" src="@(Url.Content("~/App_Scripts/Jquery/plugin/jquery.easyui/locale/easyui-lang-zh_CN.js"))"></script>
+    <script type="text/javascript" src="@Url.Content("~/App_Scripts/Jquery/plugin/jquery.easyui/datagrid-scrollview.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/App_Scripts/Jquery/plugin/jquery.easyui/datagrid-detailview.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/App_Scripts/Jquery/plugin/jquery.easyui/onload.js")"></script>
+    <script type="text/javascript" src="@(Url.Content("~/App_Scripts/Jquery/plugin/jquery.form/jquery.form.js"))"></script>
+    <script type="text/javascript" src="@Url.Content("~/App_Scripts/Jquery/plugin/jquery.cookie/jquery.cookie.js")"></script>
+    @*编辑器*@
+    <script type="text/javascript" src="@Url.Content("~/App_Scripts/Editor/KindEditor/kindeditor-min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/App_Scripts/Editor/KindEditor/lang/zh_CN.js")"></script>
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/App_Scripts/Editor/KindEditor/themes/default/default.css")" />
+    <script type="text/javascript" src="@Url.Content("~/App_Scripts/Editor/KindEditor_Onload.js")"></script>
+    <script type="text/javascript" src="@(Url.Content("~/App_Scripts/Function/common.js"))"></script>
+    @*弹出框*@
+    <link rel="stylesheet" type="text/css" href="@Url.Content("/App_Scripts/Jquery/plugin/jquery.fancybox/fancybox/jquery.fancybox-1.3.4.css")" />
+    <script type="text/javascript" src="@Url.Content("/App_Scripts/Jquery/jquery-migrate-1.1.1.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/App_Scripts/Jquery/plugin/jquery.fancybox/fancybox/jquery.fancybox-1.3.4.js")"></script>
+    <script type="text/javascript" src="@Url.Content("/App_Scripts/Jquery/plugin/jquery.fancybox/fancybox/jquery.fancybox-1.3.4.pack.js")"></script>
+    <script type="text/javascript">
+        function bindFancybox() {
+            setTimeout(function () {
+                $("a.group").each(function () {
+                    $(this).fancybox({
+                        'overlayShow': false,
+                        'transitionIn': 'elastic',
+                        'transitionOut': 'elastic'
+                    });
+                });
+            }, 500);
+        }
+    </script>
+    @RenderSection("Head", required: false)
+</head>
+@RenderBody()
+</html>

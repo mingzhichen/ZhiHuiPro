@@ -1,0 +1,276 @@
+﻿@model JieYiGuang.Model.T_ClassNews
+@{
+    Layout = "~/areas/admin/Views/Layout/_Layout_Base.cshtml";
+}
+@section Head{
+    <script type="text/javascript">
+        //ajax提交
+        function submitFrom() {
+            $.messager.progress();	// 显示进度条
+            $('#EditForm').form('submit', {
+                onSubmit: function () {
+                    //提交前验证
+                    var isValid = $(this).form('validate');
+                    if (!isValid) {
+                        // 如果表单是无效的则隐藏进度条
+                        $.messager.progress('close');
+                    }
+                    // 返回false终止表单提交
+                    return isValid;
+                },
+                success: function (data) {
+                    // 如果提交成功则隐藏进度条
+                    $.messager.progress('close');
+                    var data = $.parseJSON(data);
+                    if (data.success) {
+                        $.messager.alert('提示', data.message, 'info', function () {
+                            $("#GUID").val(newGuid());
+                            //判断是否继续添加
+                            if (data.isNew == false) {
+                                window.parent.refreshGridClose(data.parentid);
+                            } else {
+
+                                window.parent.refreshGrid(data.parentid);
+
+                            }
+                        });
+                    } else {
+                        $.messager.alert('错误', data.message, 'error');
+                    }
+                }
+            });
+        }
+
+        //保存
+        function Class_Save() {
+            $("#IsNew").val("False");
+            submitFrom();
+        }
+        //另存为
+        function Class_SaveAs() {
+            $("#ID").val(0);
+            $("#GUID").val(newGuid());
+            submitFrom();
+        }
+        //继续添加
+        function Class_SaveNew() {
+            $("#IsNew").val("True");
+            $("#ID").val(0);
+            $("#GUID").val(newGuid());
+            submitFrom();
+        }
+</script>
+
+}
+<body class="easyui-layout">
+    <div data-options="region:'center',border:true">
+        @using (Html.BeginRouteForm("Admin_MapRoute_ModuleMenuID", new { action = "Save", @MvcClassID = ViewData["MvcClassID"], @MvcMarkName = ViewData["MvcMarkName"], @MvcTemplate = ViewData["MvcTemplate"] }, FormMethod.Post, new { ID = "EditForm", name = "EditForm", fit = "true", style = "width:100%;height:100%;" }))
+        {
+            @Html.ValidationSummary()
+            @Html.AntiForgeryToken()
+            @Html.Hidden("IsNew", false)
+            @Html.Hidden("ActionGUID", "")
+            @Html.Hidden("MVCTemplate", ViewData["MVCTemplate"])
+            @Html.Hidden("MvcMarkName", ViewData["MvcMarkName"])
+            @Html.Hidden("MvcClassID", ViewData["MvcClassID"])
+            @Html.HiddenFor(m => m.ID)
+            @Html.HiddenFor(m => m.GUID)
+            @Html.HiddenFor(m => m.CreateTime)
+            @Html.HiddenFor(m => m.UpdateTime)
+            @Html.HiddenFor(m => m.CreateUser)
+            @Html.HiddenFor(m => m.UpdateUser)
+            @Html.HiddenFor(m => m.MarkIndex)
+            <div class="easyui-tabs" data-options="border:false,fit:true">
+                <div title="基本属性" style="padding: 3px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright" width="100">
+                                上级分类：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.ParentID, new { @class = "easyui-combotree textbox", @style = "width:300px;", @required = "true", @url = Url.RouteUrl("Admin.Default", new { action = "GetCombotree", MarkName = "NEWS" }) })<span class="ico-Tree" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                分类名称：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.Title, new { @class = "easyui-validatebox textbox w300", @required = "true" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                英文名称：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.SubTitle, new { @class = "easyui-validatebox textbox w300", @required = "true" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                字母标识：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.Letter, new { @class = "easyui-validatebox textbox w200" }) 注：可为空，自动生成
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                标记类型：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.MarkName, new { @class = "easyui-validatebox textbox w200" })
+                                <a href="javascript:SelectTag('MarkName','Product');">Product</a>
+                                <a href="javascript:SelectTag('MarkName','NEW');">NEW</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                热门：
+                            </th>
+                            <td>
+                                <select name="MarkHot">
+                                    <option value="0">无</option>
+                                    <option value="1" @(Model.MarkHot == 1 ? "selected" : "")>热门1</option>
+                                    <option value="1" @(Model.MarkHot == 2 ? "selected" : "")>热门2</option>
+                                    <option value="1" @(Model.MarkHot == 3 ? "selected" : "")>热门3</option>
+                                    <option value="1" @(Model.MarkHot == 4 ? "selected" : "")>热门4</option>
+                                    <option value="1" @(Model.MarkHot == 5 ? "selected" : "")>热门5</option>
+                                    <option value="1" @(Model.MarkHot == 6 ? "selected" : "")>热门6</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                排序：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.OrderNum, new { @class = "easyui-numberbox textbox w50" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                分类注释：
+                            </th>
+                            <td>
+                                @Html.TextAreaFor(m => m.Descriptions, new { @class = "easyui-validatebox textbox w400 h80" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                状态：
+                            </th>
+                            <td>
+                                @*@Html.DropDownListFor(m => m.MarkStatus, BtxCMS.Models.SelectItem.GetSelectListItem(BtxCMS.Models.Dictionary.IsStatus), new { @class = "easyui-combobox", @style = "width:120px;" })*@
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+                <div title="扩展属性" style="padding: 3px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright" width="100">
+                                分类地址：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.Url, new { @class = "easyui-validatebox textbox w400" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                分类图片：
+                            </th>
+                            <td>
+                                <img src="@(Model.Images)" width="100" id="Images_Show" class="screenshot"><br>
+                                @Html.TextBoxFor(t => t.Images, new { @class = "easyui-validatebox textbox w300 " })
+                                @Html.Raw(Html.UploadDialog(1, "Images", "图片上传", "", JieYiGuang.Web.UI.Class.UpLoad.UploadModel.UpdateFileType(JieYiGuang.Web.UI.Class.UpLoad.UploadType.Image)))
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div title="SEO优化" style="padding: 3px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright" width="100">
+                                SEO标题：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.SeoTitle, new { @class = "easyui-validatebox textbox w400" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                SEO关键字：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.SeoKeywords, new { @class = "easyui-validatebox textbox w400" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                SEO描述：
+                            </th>
+                            <td>
+                                @Html.TextAreaFor(m => m.SeoDescription, new { @class = "easyui-validatebox textbox w400 h60" })
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div title="其他" style="padding: 3px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright" width="100">
+                                ID [GUID]：
+                            </th>
+                            <td>
+                                @(Model.ID) 【@(Model.GUID.ToString().ToUpper())】
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                创建时间：
+                            </th>
+                            <td>
+                                @Model.CreateTime
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                创建人：
+                            </th>
+                            <td>
+                                @Model.CreateUser
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                更新时间：
+                            </th>
+                            <td>
+                                @Model.UpdateTime
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                修改人：
+                            </th>
+                            <td>
+                                @Model.UpdateUser
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="dialog-button TextCenter" data-options="region:'south',border:false">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="icon-ok" onclick="return Class_Save();">@(Model.ID == 0 ? "添加" : "修改")</a>
+        @if (Model.ID == 0)
+        {
+            <a href="javascript:void(0);" class="easyui-linkbutton fr" iconcls="icon-ok" onclick="return Class_SaveNew();">继续添加</a>
+        }
+        <a href="javascript:void(0);" class="easyui-linkbutton " data-options="iconCls:'icon-no'" onclick="return window.parent.cancel();">取消</a>
+    </div>
+</body>

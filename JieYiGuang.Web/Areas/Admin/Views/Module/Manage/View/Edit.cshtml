@@ -1,0 +1,128 @@
+﻿@model JieYiGuang.Model.T_AdminUser
+@{
+    Layout = "~/areas/admin/Views/Layout/_Layout_Base.cshtml";
+}
+@section Head{
+    @Html.Partial("~/areas/admin/Views/Layout/_Layout_Head_Edit.cshtml")
+
+    <script type="text/javascript">
+        //ajax提交
+        function submitFrom() {
+            $.messager.progress();	// 显示进度条
+            $('#EditForm').form('submit', {
+                onSubmit: function () {
+                    //提交前验证
+                    var isValid = $(this).form('validate');
+                    if (!isValid) {
+                        // 如果表单是无效的则隐藏进度条
+                        $.messager.progress('close');
+                    }
+                    // 返回false终止表单提交
+                    return isValid;
+                },
+                success: function (data) {
+                    // 如果提交成功则隐藏进度条
+                    $.messager.progress('close');
+                    var data = $.parseJSON(data);
+                    if (data.success) {
+                        $.messager.alert('提示', data.message, 'info', function () {
+                            window.parent.refreshGrid();
+                        });
+                    } else {
+                        $.messager.alert('错误', data.message, 'error');
+                    }
+                }
+            });
+        }
+    </script>
+}
+<body class="easyui-layout">
+    <div data-options="region:'center',border:false">
+        @using (Html.BeginRouteForm("Admin_MapRoute_ModuleMenuID", new { action = "Save", @MvcClassID = ViewData["MvcClassID"], @MvcMarkName = ViewData["MvcMarkName"], @MvcTemplate = ViewData["MvcTemplate"] }, FormMethod.Post, new { ID = "EditForm", name = "EditForm", fit = "true", style = "width:100%;height:100%;" }))
+        {
+            @Html.ValidationSummary()
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ID)
+            @Html.Hidden("role_id","1")
+            <div class="easyui-tabs" data-options="border:false,fit:true">
+                <div title="基本属性" style="padding: 10px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright">
+                                <label>用 户 名：</label>
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.UserName, new { @Class = "easyui-validatebox textbox w400 Title ", required = "true" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                密 码：
+                            </th>
+                            <td>
+                                @Html.PasswordFor(m => m.AdminPassword, new { @value = Model.AdminPassword, @Class = "easyui-validatebox textbox w400 ", required = "true" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                状态：
+                            </th>
+                            <td>
+                                @Html.DropDownListFor(m => m.IsLock, JieYiGuang.Model.SelectItem.GetSelectListItem(JieYiGuang.Model.T_AdminUser.IslockItem), new { @class = "easyui-combobox", @style = "width:120px;" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                昵称：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.Name, new { @Class = "easyui-validatebox textbox w200 Title ", required = "false" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                联系电话：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.Mobile, new { @Class = "easyui-validatebox textbox w200 Title ", required = "false" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                邮箱：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.Email, new { @Class = "easyui-validatebox textbox w200 Title ", required = "false" })
+                            </td>
+                        </tr>
+                        @if (Model.ID != 0)
+                        {
+
+                            <tr>
+                                <th class="tdright"></th>
+                                <td>
+                                    --------------------------------------------------------------------
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="tdright">
+                                    创建时间：
+                                </th>
+                                <td>
+                                    @Model.CreateTime
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="tdright"></th>
+                                <td>
+                                    --------------------------------------------------------------------
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="dialog-button TextCenter" data-options="region:'south',split:false,border:false"><a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-ok" onclick="return submitFrom();">@(Model.ID == 0 ? "添加" : "修改")</a> <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="    return window.parent.cancel();">取消</a> </div>
+</body>

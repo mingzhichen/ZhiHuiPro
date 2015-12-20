@@ -1,0 +1,191 @@
+﻿@using JieYiGuang.Model
+@using System.Linq
+@{
+    Layout = "../Shared/_Layout.cshtml";
+    ViewBag.Title = "福州致辉光电科技有限公司（Devotop Photonics,Inc.）";
+    ViewBag.KeyWord = "Devotop,致辉,光电,光学,镜片,透镜,柱面镜,偏振,lens,cylindrical,激光,镜头,成像,波片,晶体";
+    ViewBag.Description = "致辉光电用最大的热情提供优质的光学产品和专业的技术服务。我们的产品包括平面光学，球面和柱面光学，晶体，偏振光学，以及光学装配件。广泛运用于激光行业，工业自动化，高端仪器，科研军工，成像和机器视觉等行业。";
+
+}
+@section Head{
+}
+@model JieYiGuang.Model.T_Message
+
+<div class="contant">
+    <div class="top"> </div>
+    <!--star banner-->
+    @Html.Partial("~/Views/Shared/_Partial_Banner.cshtml")
+    <!--end banner-->
+    <div class="pubanner">
+        <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,19,0" height="160" width="961">
+            <param name="movie" value="flash/banner6.swf">
+            <param name="quality" value="high">
+            <embed src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/banner6.swf")" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" height="160" width="961">
+        </object>
+    </div>
+    <div class="mian_warp">
+        <div class="pucont">
+            <div class="puconttitle"><span class="left logo"><a href="/"></a></span> </div>
+            <div class="both"> </div>
+            <div class="pucontcont">
+                <div class="left w200">
+                    <img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/contactlefttitle.jpg")">
+                    <ul class="leftmenu">
+                        <li class="li"><a href="@(Url.Action("Message", "Home"))">Messages</a> </li>
+                        <li><a href="@(Url.Action("Contact", "Home"))">Contact us</a> </li>
+                    </ul>
+                    <div class="both2"> </div>
+                    <div class="leftlink"> 
+                    <a href="@(Url.Action("Product", "Home", new { Id = 2}))"><img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/imgleftlink1.jpg")"></a> 
+                    <a href="@(Url.Action("Message", "Home"))"><img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/imgleftlink2.jpg")"></a> 
+                    <a href="@(Url.Action("Faq", "Home"))"><img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/imgleftlink3.jpg")"></a>
+                    </div>
+                </div>
+                <div class="right w725">
+                    <div class="left w543">
+                        <div class="puzcont">
+                            <div class="puzcontwz"> <span class="left"><a href="#">Home</a> &gt; <a href="#">Contact us</a> &gt; <span> Messages</span></span> </div>
+                            <div class="main" style="padding-top:15px;">
+                                <div class="ask" style="width:640px;">
+                                     <p><b>Dear customer：</b></p>
+                                      <p>Thanks for your interest to Devotop, please fill in the following information. Our sales engineer will contact you soon, thank you!<span style="color:#900;">(We will keep your information completely private.)</span> </p>
+                                      <p>&nbsp;</p>
+                                    <form id="profileForm" type="actionForm" action="/Home/DoMessage" method="post" >
+                                        <input type="hidden" name="c" value="add">
+                                        <ul>
+                                            <li>
+                                                <span class="a">First Name:</span><span class="b">
+                                                    <input id="co_name" class="required" maxlength="40" name="Name" size="20" type="text" tabindex="1" value="@(Model.Name)" />
+                                                </span><span class="c">*<span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Last name:</span><span class="b">
+                                                    <input id="co_nickname" maxlength="40" name="NickName" size="20" type="text" tabindex="2" value="@(Model.NickName)" />
+                                                </span><span class="c"><span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Title:</span><span class="b">
+                                                    <input id="co_Title" maxlength="40" name="Title" size="20" type="text" tabindex="3" value="@(Model.Title)" />
+                                                </span><span class="c"><span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Company:</span><span class="b">
+                                                    <input id="co_Company" maxlength="40" name="Company" size="20" type="text" tabindex="4" value="@(Model.Company)" />
+                                                </span><span class="c">*<span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Department:</span><span class="b">
+                                                    <input id="co_Department" maxlength="40" name="Department" size="20" type="text" tabindex="5" value="@(Model.Department)" />
+                                                </span><span class="c"><span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Address:</span><span class="b">
+                                                    <input maxlength="40" name="Address" size="20" type="text" tabindex="6" value="@(Model.Address)" />
+                                                </span><span class="c">*<span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">City:</span><span class="b">
+                                                    <input id="co_City" maxlength="40" name="City" size="20" type="text" tabindex="7" value="@(Model.City)" />
+                                                </span><span class="c">*<span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">State(Province):</span><span class="b">
+                                                    <input id="co_nickname" maxlength="40" name="Province" size="20" type="text" tabindex="8" value="@(Model.Province)" />
+                                                </span><span class="c">*<span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Post Code:</span><span class="b">
+                                                    <input id="co_PostCode" maxlength="40" name="PostCode" size="20" type="text" tabindex="9" value="@(Model.PostCode)" />
+                                                </span><span class="c">*<span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Country:</span><span class="b">
+                                                    <input id="co_Country" maxlength="40" name="Country" size="20" type="text" tabindex="10" value="@(Model.Country)" />
+                                                </span><span class="c"><span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Tel:</span><span class="b">
+                                                    <input id="phone" maxlength="14" name="Phone" type="text" class="required phone" tabindex="11" value="@(Model.Phone)" />
+                                                </span><span class="c">*<span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Fax:</span><span class="b">
+                                                    <input  maxlength="50" name="Fax" type="text" tabindex="12" value="@(Model.Fax)" />
+                                                </span><span class="c"><span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Email:</span><span class="b">
+                                                    <input  maxlength="50" name="Email" type="text" class="required email" tabindex="13" value="@(Model.Email)" />
+                                                </span><span class="c">*<span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <span class="a">Web Site:</span><span class="b">
+                                                    <input  maxlength="50" name="WebSite" type="text" tabindex="14" value="@(Model.WebSite)" />
+                                                </span><span class="c"><span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li style="height:165px;">
+                                                <span class="a">Details :</span><span class="b">
+                                                    <textarea name="Contents" tabindex="14">@(Model.Contents)</textarea>
+                                                </span><span class="c"><span class="Validform_checktip"></span></span>
+                                            </li>
+                                            <li>
+                                                <input class="asksub" type="submit" id="asm" border="0" value="Submit">
+                                                <input type="reset" value="Reset" onclick="change()" class="asksub" style="margin-left:35px;">
+                                            </li>
+                                        </ul>
+                                    </form>
+                                </div>
+                                <p><span style="font-size:larger">&nbsp;</span></p>
+                                <table border="0" cellpadding="0" cellspacing="0" width="540">
+                                    <tbody>
+                                        <tr>
+                                            <td><div class="print" style="border-top:#CCCCCC dotted 1px;"> <span class="left"> <a href="#">&nbsp;</a></span> <span class="right"> <a href="#"> <img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/jt4.jpg")"> Top</a></span> </div></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="both2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="both"> </div>
+            </div>
+            <div class="both"> </div>
+        </div>
+    </div>
+</div>
+
+@section Footer{
+<script src="~/Scripts/jquery.validate.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+<!--
+function initArray(){for(i=0;i<initArray.arguments.length;i++)
+this[i]=initArray.arguments[i];}var isnMonths=new initArray("1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月");var isnDays=new initArray("星期日","星期一","星期二","星期三","星期四","星期五","星期六","星期日");today=new Date();hrs=today.getHours();min=today.getMinutes();sec=today.getSeconds();clckh=""+((hrs>12)?hrs-12:hrs);
+clckm=((min<10)?"0":"")+min;clcks=((sec<10)?"0":"")+sec;clck=(hrs>=12)?"下午":"上午";var stnr="";var ns="0123456789";var a="";
+//--> 
+$().ready(function () {
+    $("#profileForm").validate({
+        rules:{
+            Name:"required",
+            email:{
+                required:true,
+                email:true
+            },
+            phone:{
+                required:true,
+                minlength:5
+            }
+        },
+        submitHandler:function (form)
+        {
+            $(form).ajaxSubmit();
+        }
+    });
+});
+@if(!String.IsNullOrWhiteSpace(ViewBag.Message))
+{
+    @:alert("@(ViewBag.Message)");
+}
+</script>
+}

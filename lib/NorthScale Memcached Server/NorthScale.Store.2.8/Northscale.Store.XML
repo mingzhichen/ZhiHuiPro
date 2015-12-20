@@ -1,0 +1,356 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Northscale.Store</name>
+    </assembly>
+    <members>
+        <member name="M:NorthScale.Store.BucketConfigListener.ReleaseListener(NorthScale.Store.MessageStreamListener)">
+            <summary>
+            Unsubscibes from a pooled listener, and destrpys it if no additionals subscribers are present.
+            </summary>
+            <param name="listener"></param>
+        </member>
+        <member name="P:NorthScale.Store.BucketConfigListener.Timeout">
+            <summary>
+            Connection timeout in milliseconds for connecting the pool.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.BucketConfigListener.DeadTimeout">
+            <summary>
+            Time to wait in milliseconds to reconnect to the pool when all nodes are down.
+            </summary>
+        </member>
+        <member name="F:NorthScale.Store.Configuration.BucketPortType.Proxy">
+            <summary>
+            Connect to the nodes using moxy
+            </summary>
+        </member>
+        <member name="F:NorthScale.Store.Configuration.BucketPortType.Direct">
+            <summary>
+            Connect to the nodes directly using the Memcached port
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.Configuration.INorthScaleClientConfiguration.CreateKeyTransformer">
+            <summary>
+            Creates an <see cref="T:Enyim.Caching.Memcached.IMemcachedKeyTransformer"/> instance which will be used to convert item keys for Memcached.
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.Configuration.INorthScaleClientConfiguration.CreateNodeLocator">
+            <summary>
+            Creates an <see cref="T:Enyim.Caching.Memcached.IMemcachedNodeLocator"/> instance which will be used to assign items to Memcached nodes.
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.Configuration.INorthScaleClientConfiguration.CreateTranscoder">
+            <summary>
+            Creates an <see cref="T:Enyim.Caching.Memcached.ITranscoder"/> instance which will be used to serialize or deserialize items.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.INorthScaleClientConfiguration.Bucket">
+            <summary>
+            Gets the name of the bucket to be used. If not specified the "default" bucket will be used.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.INorthScaleClientConfiguration.BucketPassword">
+            <summary>
+            Gets the pasword used to connect to the bucket.
+            </summary>
+            <remarks> If null, the bucket name will be used. Set to String.Empty to use an empty password.</remarks>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.INorthScaleClientConfiguration.Urls">
+            <summary>
+            Gets a list of <see cref="T:IPEndPoint"/> each representing a Memcached server in the pool.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.INorthScaleClientConfiguration.SocketPool">
+            <summary>
+            Gets the configuration of the socket pool.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.INorthScaleClientConfiguration.Credentials">
+            <summary>
+            Gets the credentials used to connect to the REST API of the cluster.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.INorthScaleClientConfiguration.Port">
+            <summary>
+            Determines which port the client should use to connect to the nodes
+            </summary>
+        </member>
+        <member name="T:NorthScale.Store.Configuration.NorthScaleClientConfiguration">
+            <summary>
+            Configuration class
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.Configuration.NorthScaleClientConfiguration.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:MemcachedClientConfiguration"/> class.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientConfiguration.Bucket">
+            <summary>
+            Gets or sets the name of the bucket to be used. Can be overriden at the pool's constructor, and if not specified the "default" bucket will be used.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientConfiguration.BucketPassword">
+            <summary>
+            Gets or sets the pasword used to connect to the bucket.
+            </summary>
+            <remarks> If null, the bucket name will be used. Set to String.Empty to use an empty password.</remarks>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientConfiguration.Urls">
+            <summary>
+            Gets a list of <see cref="T:IPEndPoint"/> each representing a Memcached server in the pool.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientConfiguration.SocketPool">
+            <summary>
+            Gets the configuration of the socket pool.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientConfiguration.KeyTransformer">
+            <summary>
+            Gets or sets the <see cref="T:Enyim.Caching.Memcached.IMemcachedKeyTransformer"/> which will be used to convert item keys for Memcached.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientConfiguration.NodeLocator">
+            <summary>
+            Gets or sets the Type of the <see cref="T:Enyim.Caching.Memcached.IMemcachedNodeLocator"/> which will be used to assign items to Memcached nodes.
+            </summary>
+            <remarks>If both <see cref="M:NodeLocator"/> and  <see cref="M:NodeLocatorFactory"/> are assigned then the latter takes precedence.</remarks>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientConfiguration.NodeLocatorFactory">
+            <summary>
+            Gets or sets the NodeLocatorFactory instance which will be used to create a new IMemcachedNodeLocator instances.
+            </summary>
+            <remarks>If both <see cref="M:NodeLocator"/> and  <see cref="M:NodeLocatorFactory"/> are assigned then the latter takes precedence.</remarks>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientConfiguration.Transcoder">
+            <summary>
+            Gets or sets the <see cref="T:Enyim.Caching.Memcached.ITranscoder"/> which will be used serialzie or deserialize items.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientConfiguration.Port">
+            <summary>
+            Determines which port the client should use to connect to the nodes
+            </summary>
+        </member>
+        <member name="T:NorthScale.Store.Configuration.NorthScaleClientSection">
+            <summary>
+            Configures the <see cref="T:MemcachedClient"/>. This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.Configuration.NorthScaleClientSection.PostDeserialize">
+            <summary>
+            Called after deserialization.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientSection.SocketPool">
+            <summary>
+            Gets or sets the configuration of the socket pool.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientSection.NodeLocator">
+            <summary>
+            Gets or sets the <see cref="T:Enyim.Caching.Memcached.IMemcachedNodeLocator"/> which will be used to assign items to Memcached nodes.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientSection.KeyTransformer">
+            <summary>
+            Gets or sets the <see cref="T:Enyim.Caching.Memcached.IMemcachedKeyTransformer"/> which will be used to convert item keys for Memcached.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.NorthScaleClientSection.Transcoder">
+            <summary>
+            Gets or sets the <see cref="T:Enyim.Caching.Memcached.ITranscoder"/> which will be used serialzie or deserialize items.
+            </summary>
+        </member>
+        <member name="T:NorthScale.Store.Configuration.ServersElement">
+            <summary>
+            Configures the <see cref="T:MemcachedClient"/>. This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.ServersElement.Bucket">
+            <summary>
+            Gets or sets the name of the bucket to be used. Can be overriden at the pool's constructor, and if not specified the "default" bucket will be used.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.ServersElement.BucketPassword">
+            <summary>
+            Gets or sets the pasword used to connect to the bucket.
+            </summary>
+            <remarks> If null, the bucket name will be used. Set to String.Empty to use an empty password.</remarks>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.ServersElement.UserName">
+            <summary>
+            Gets or sets the user name used to connect to a secured cluster
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.ServersElement.Password">
+            <summary>
+            Gets or sets the password used to connect to a secured cluster
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.ServersElement.Urls">
+            <summary>
+            Returns a collection of nodes in the cluster the client should use to retrieve the Memcached nodes.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.ServersElement.Port">
+            <summary>
+            Determines which port the client should use to connect to the nodes
+            </summary>
+        </member>
+        <member name="T:NorthScale.Store.Configuration.UriElement">
+            <summary>
+            Represents a configuration element that contains a Memcached node address. This class cannot be inherited. 
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.Configuration.UriElement.Uri">
+            <summary>
+            Gets or sets the ip address of the node.
+            </summary>
+        </member>
+        <member name="T:NorthScale.Store.Configuration.UriElementCollection">
+            <summary>
+            Represents a collection of <see cref="T:EndPointElement"/> instances. This class cannot be inherited.
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.Configuration.UriElementCollection.CreateNewElement">
+            <summary>
+            Creates a new <see cref="T:ConfigurationElement"/>.
+            </summary>
+            <returns>A new <see cref="T:ConfigurationElement"/>.</returns>
+        </member>
+        <member name="M:NorthScale.Store.Configuration.UriElementCollection.GetElementKey(System.Configuration.ConfigurationElement)">
+            <summary>
+            Gets the element key for a specified configuration element when overridden in a derived class.
+            </summary>
+            <param name="element">The <see cref="T:ConfigurationElement"/> to return the key for. </param>
+            <returns>An <see cref="T:Object"/> that acts as the key for the specified <see cref="T:ConfigurationElement"/>.</returns>
+        </member>
+        <member name="M:NorthScale.Store.Configuration.UriElementCollection.ToUriCollection">
+            <summary>
+            Helper method; converts the collection into an <see cref="T:IPEndPoint"/> collection for the interface implementation.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:NorthScale.Store.MessageStreamListener">
+            <summary>
+            Listens on a streamingUri and processes the messages
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.MessageStreamListener.#ctor(System.Uri[],System.Func{NorthScale.Store.WebClientWithTimeout,System.Uri,System.Uri})">
+            <summary>
+            
+            </summary>
+            <param name="urls"></param>
+            <param name="converter">you use this to redirect the original url into somewhere else. called only once by urls before the MessageStreamListener starts processing it</param>
+        </member>
+        <member name="M:NorthScale.Store.MessageStreamListener.Start">
+            <summary>
+            Starts processing the streaming URI
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.MessageStreamListener.Stop">
+            <summary>
+            Stops processing
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.MessageStreamListener.Credentials">
+            <summary>
+            The credentials used to connect to the urls.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.MessageStreamListener.Timeout">
+            <summary>
+            Connection timeout in milliseconds for connecting the urls.
+            </summary>
+        </member>
+        <member name="P:NorthScale.Store.MessageStreamListener.DeadTimeout">
+            <summary>
+            The time in milliseconds the listener should wait when retrying after the whole server list goes down.
+            </summary>
+        </member>
+        <member name="T:NorthScale.Store.NorthScaleClient">
+            <summary>
+            Client which can be used to connect to NothScale's Memcached and Membase servers.
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.NorthScaleClient.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:NorthScale.Store.NorthScalePool" /> class using the default configuration and bucket.
+            </summary>
+            <remarks>The configuration is taken from the /configuration/northscale section.</remarks>
+        </member>
+        <member name="M:NorthScale.Store.NorthScaleClient.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NorthScale.Store.NorthScalePool" /> class 
+            using the default configuration and the specified bucket name.
+            </summary>
+            <param name="bucketName">The name of the bucket this client will connect to.</param>
+        </member>
+        <member name="M:NorthScale.Store.NorthScaleClient.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NorthScale.Store.NorthScalePool" /> class 
+            using the specified configuration and bucket name.
+            </summary>
+            <param name="sectionName">The name of the configuration section to load.</param>
+            <param name="bucketName">The name of the bucket this client will connect to.</param>
+        </member>
+        <member name="M:NorthScale.Store.NorthScaleClient.#ctor(NorthScale.Store.Configuration.INorthScaleClientConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NorthScale.Store.NorthScalePool" /> class 
+            using a custom configuration provider.
+            </summary>
+            <param name="configuration">The custom configuration provider.</param>
+        </member>
+        <member name="M:NorthScale.Store.NorthScaleClient.#ctor(NorthScale.Store.Configuration.INorthScaleClientConfiguration,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NorthScale.Store.NorthScalePool" /> class 
+            using a custom configuration provider and the specified bucket name.
+            </summary>
+            <param name="configuration">The custom configuration provider.</param>
+            <param name="bucketName">The name of the bucket this client will connect to. Note: this will override the configuration's BucketName property.</param>
+        </member>
+        <member name="T:NorthScale.Store.NorthScalePool">
+            <summary>
+            Socket pool using the NorthScale server's dynamic node list
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.NorthScalePool.#ctor(NorthScale.Store.Configuration.INorthScaleClientConfiguration,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NorthScale.Store.NorthScalePool" /> class using the specified configuration 
+            and bucket name. The name also will be used as the bucket password.
+            </summary>
+            <param name="configuration">The configuration to be used.</param>
+            <param name="bucket">The name of the bucket to connect to.</param>
+        </member>
+        <member name="M:NorthScale.Store.NorthScalePool.#ctor(NorthScale.Store.Configuration.INorthScaleClientConfiguration,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:NorthScale.Store.NorthScalePool" /> class using the specified configuration,
+            bucket name and password.
+            </summary>
+            <param name="configuration">The configuration to be used.</param>
+            <param name="bucket">The name of the bucket to connect to.</param>
+            <param name="bucketPassword">The password to the bucket.</param>
+            <remarks> If the password is null, the bucket name will be used. Set to String.Empty to use an empty password.</remarks>
+        </member>
+        <member name="T:NorthScale.Store.VBucketAwareOperationFactory">
+            <summary>
+            Membase requires each item operation to have a vbucket index set in the request's "reserved" field. (This is used for replicatiom and failover.) This op factory provides customized operations handling these indexes.
+            </summary>
+        </member>
+        <member name="M:NorthScale.Store.WebClientWithTimeout.GetWebRequest(System.Uri,System.String)">
+            <summary>
+            Returns a <see cref="T:System.Net.WebRequest"/> object for the specified resource. The returned instance will have a custom ConnectionGroup to avoid running into connection limits.
+            </summary>
+            <param name="address">A <see cref="T:System.Uri"/> that identifies the resource to request. </param>
+            <returns>A new <see cref="T:System.Net.WebRequest"/> object for the specified resource. </returns>
+        </member>
+        <member name="P:NorthScale.Store.WebClientWithTimeout.Timeout">
+            <summary>
+            Connection timeout in msec.
+            </summary>
+        </member>
+    </members>
+</doc>

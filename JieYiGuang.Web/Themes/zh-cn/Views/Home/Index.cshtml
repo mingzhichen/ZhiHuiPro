@@ -1,0 +1,155 @@
+﻿@using JieYiGuang.Model
+@using System.Linq
+@{
+    Layout = "../Shared/_Layout.cshtml";
+    ViewBag.Title = "福州致辉光电科技有限公司（Devotop Photonics,Inc.）";
+    ViewBag.KeyWord = "Devotop,致辉,光电,光学,镜片,透镜,柱面镜,偏振,lens,cylindrical,激光,镜头,成像,波片,晶体";
+    ViewBag.Description = "致辉光电用最大的热情提供优质的光学产品和专业的技术服务。我们的产品包括平面光学，球面和柱面光学，晶体，偏振光学，以及光学装配件。广泛运用于激光行业，工业自动化，高端仪器，科研军工，成像和机器视觉等行业。";
+
+}
+@section Head{
+}
+@model JieYiGuang.Web.Models.IndexViewModel
+
+
+<div class="contant">
+  <div class="top"> </div>
+    <!--star banner-->
+    @Html.Partial("~/Views/Shared/_Partial_Banner.cshtml")
+    <!--end banner-->
+  <div class="banner">
+    <div class="banner_index"> <a href="javascript:void(0);" class="btn btnPre" id="banner_index_pre"></a> <a href="javascript:void(0);" class="btn btnNext" id="banner_index_next"></a>
+      <ul class="banner_wrap" id="banner_index">
+        @if (Model.Banners != null)
+        {
+            foreach (var item in Model.Banners)
+            {
+                <li><a href="@(item.LinkUrl)"><img src="@(item.Images)" width="960" height="381" /></a></li>
+            }
+        }
+      </ul>
+    </div>
+    <div class="indexBanner_num" id="index_numIco"></div>
+    <script type="text/javascript">
+var ShowPre1 = new ShowPre({box:"banner_index",Pre:"banner_index_pre",Next:"banner_index_next",numIco:"index_numIco",loop:1,auto:1});
+</script> 
+  </div>
+  <div class="mian">
+    <table width="960" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tbody>
+        <tr>
+          <td valign="top"><img src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/hg1.gif")" width="961" height="17"></td>
+        </tr>
+        <tr>
+          <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tbody>
+                <tr >
+                  <td valign="top" width="203"><table width="90%" border="0" align="center" cellpadding="0" cellspacing="0">
+                      <tbody>
+                        <tr>
+                          <td height="40" valign="bottom"><img src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/zxcp.jpg")" width="180" height="27" border="0" align="absmiddle" usemap="#Map"></td>
+                        </tr>
+                        <tr>
+                          <td height="178"><div class="zxcp">
+                              <ul>
+                                  @if (Model.NewsProduct != null)
+                                  {
+                                      foreach (var item in Model.NewsProduct)
+                                      {
+                                          string url = Url.Action("Product", "Home", new { Id = item.ID });
+                                        <li>
+                                            <img src="@(item.Images)" width="60" height="46" /><a href="@(url)">
+                                                @(item.Title)<br />
+                                            </a>
+                                        </li>
+                                      }
+                                  }
+                                <div style="clear:both"></div>
+                              </ul>
+                            </div></td>
+                        </tr>
+                      </tbody>
+                    </table></td>
+                  <td width="22" height="240" background="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/xts.jpg")">&nbsp;</td>
+                  <td width="463" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0" style="padding:3px 0 0 0;">
+                      <tbody>
+                        <tr>
+                          <td width="395" height="40"><img src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/cps.jpg")" width="71" height="17"></td>
+                          <td width="66"><a href="@(Url.Action("Product", "Home", new { ClassID = 5}))"><img src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/jiags.jpg")" width="66" height="30" border="0"></a></td>
+                        </tr>
+                        <tr>
+                          <td height="178" colspan="2" valign="top" background="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/zjggs.jpg")"><table width="90%" border="0" align="center" cellpadding="0" cellspacing="0">
+                              <tbody>
+                                <tr>
+                                  <td valign="top"><div id="demo">
+                                      <div id="indemo">
+                                        <div id="demo1">
+                                          <ul id="tu">
+                                              @if (Model.Products != null)
+                                              {
+                                                  foreach (var item in Model.Products)
+                                                  {
+                                                      string url = Url.Action("Product", "Home", new { ClassID = item.ID });
+                                                    <li>
+                                                        <a href="@(url)">
+                                                            <img src="@(item.Images)" width="155" height="120">
+                                                            <div class="tit"><img src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/xogs.jpg")" align="absmiddle">@(item.Title)</div>
+                                                        </a>
+                                                    </li>
+                                                  }
+                                              }
+                                          </ul>
+                                        </div>
+                                        <div id="demo2"> </div>
+                                      </div>
+                                    </div>
+                                    <script>
+<!--
+var speed=20;
+var tab=document.getElementById("demo");
+var tab1=document.getElementById("demo1");
+var tab2=document.getElementById("demo2");
+tab2.innerHTML=tab1.innerHTML;
+function Marquee(){
+if(tab2.offsetWidth-tab.scrollLeft<=0)
+tab.scrollLeft-=tab1.offsetWidth
+else{
+tab.scrollLeft++;
+}
+}
+var MyMar=setInterval(Marquee,speed);
+tab.onmouseover=function() {clearInterval(MyMar)};
+tab.onmouseout=function() {MyMar=setInterval(Marquee,speed)};
+-->
+</script></td>
+                                </tr>
+                              </tbody>
+                            </table></td>
+                        </tr>
+                      </tbody>
+                    </table></td>
+                  <td width="22" background="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/xts2.jpg")">&nbsp;</td>
+                  <td valign="top"><table width="90%" border="0" align="center" cellpadding="0" cellspacing="0">
+                      <tbody>
+                        <tr>
+                          <td height="40" valign="bottom"><a href="@(Url.Action("About", "Home"))"><img src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/fsgghd.jpg")" width="225" height="27" border="0" align="absmiddle" usemap="#Map"></a></td>
+                        </tr>
+                        <tr>
+                          <td height="178"><img src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/yzxcon.jpg")" width="228" height="195" border="0" usemap="#Map2"></td>
+                        </tr>
+                      </tbody>
+                    </table></td>
+                </tr>
+              </tbody>
+            </table></td>
+        </tr>
+        <tr>
+          <td><img src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/hg2.gif")" width="961" height="17"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@section Footer{
+}

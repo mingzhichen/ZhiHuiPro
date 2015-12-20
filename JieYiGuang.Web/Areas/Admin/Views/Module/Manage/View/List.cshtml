@@ -1,0 +1,251 @@
+﻿@{
+    ViewBag.Title = "管理员管理";
+    Layout = "~/areas/admin/Views/Layout/_Layout_Base.cshtml";
+}
+@section Head{
+    <script type="text/javascript">
+    <!--
+        var tree,grid,tabs,dialogWin,searchWin,arraylistWin;
+
+        $(function (){
+
+            //初始化-模糊搜索
+            $('#SearchKey').combobox({
+                mode: 'remote',
+                url: "SearchKey-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx",
+                valueField: 'user_name',
+                textField: 'user_name'
+            });
+
+            // 初始化-标签页
+            var tabs = $('#tabs').tabs();
+            $('#tabs').click(function () { // 绑定单击事件
+                $("#SearchMarkStatus").val(tabs.tabs('getSelected').panel('options').id);
+                btnSearch();
+            });
+
+            //初始化-批量操作窗口
+            arraylistWin = $('#arraylist-window').window({
+                iconCls: 'icon-redo',
+                closed: true,
+                modal: false
+            });
+
+            //初始化-栏目树
+            tree = $('#tree').tree({
+                checkbox: false,
+                methord:'get',
+                url: '@Url.RouteUrl("Admin_MapRoute_ModuleMVC", new { @controller = "AdminGroup", MvcTemplate = ViewData["MvcTemplate"], action = "ClassTree", MvcMarkName = ViewData["MvcMarkName"], MvcClassID = ViewData["MvcClassID"] })?ran='+Math.random(),
+                onClick: function (node) {
+                    clickTree(node.id);
+                },
+                onContextMenu: function (e, node) {
+                    e.preventDefault();
+                    $('#tree').tree('select', node.target);
+                    $('#tree_menu').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                }
+            });
+
+            //初始化-列表
+            grid = $('#grid-list').datagrid({
+                height: 'auto',
+                width: function () { return document.body.clientWidth * 0.9 },
+                iconCls: 'icon-n-computer',
+                loadMsg: "数据加载中，请稍后……",
+                url: 'List-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx',
+                autoRowHeight: false,
+                striped: true,//显示斑马线效果
+                pagination: true, //分页控件
+                pageSize: 10,
+                pageList: [10, 50, 100],
+                pagePosition: 'bottom',//分页工具栏的位置
+                rownumbers: true, //行号
+                fit: true, //自动大小
+                checkOnSelect: true,//选中复选框关联
+                singleSelect:false,//只能选中一行
+                sortOrder: 'asc',
+                idField: 'ID',//设置主键列
+                //冻结列
+                frozenColumns: [[
+	                { field: 'ck',checkbox: true,width: 40 },
+                    { field: 'ID', title: 'ID', width: 40, align: 'center' },
+                    { field: 'UserName', title: '用户名', width: 160, align: 'center' }
+                ]],
+                //滚动列
+                columns: [[
+                    { field: 'Name', title: '昵称', width: 80, align: 'center' },
+                    { field: 'Mobile', title: '电话号码', width: 100, align: 'center' },
+                    { field: 'Email', title: '邮箱', width: 140, align: 'center' },
+                    { field: 'IsLock', title: '是否锁定', width: 80, align: 'center' },
+                    { field: 'CreateTime', title: '创建时间', width: 140, align: 'center', formatter: function (value, row, index) { return FormatTime(value, "yyyy-MM-dd hh:mm:ss"); } }
+                ]],
+                //双击操作
+                onDblClickRow: function (rowIndex, rowData) {
+                    edit(rowData.id);
+                },
+                //失败操作
+                onLoadError:function(){
+                    msgShow("操作失败","发生错误,获取列表失败！","error");
+               }
+            });
+            grid.datagrid('getPager').pagination({
+				showPageList: true,
+                showRefresh: true,
+                beforePageText: "第",
+                afterPageText: "页 ，共 <span class=\"red\">{pages}</span> 页",
+                displayMsg: '当前 <span class=\"red\">{from}</span> 到 <span class=\"red\">{to}</span> 条，总共 <span class=\"red\">{total}</span> 条'
+            });
+            $('body').layout();
+        });
+
+        //搜索
+        function btnSearch()
+        {
+            grid.datagrid("load", {
+                SearchClassID :$("#SearchClassID").val(),
+                SearchMarkStatus :$("#SearchMarkStatus").val(),
+                SearchKey: $("#SearchKey").combobox('getValue')
+                //SearchTimeBegin : $("#SearchTimeBegin").combobox('getValue');
+                //SearchTimeEnd : $("#SearchTimeEnd").combobox('getValue');
+            });
+        }
+
+        //菜单树触发
+        function clickTree(nodeid)
+        {
+            $("#SearchClassID").val(nodeid);
+            btnSearch();
+        }
+
+        //获得选中列表个数
+        function getSelectedArr(id) {
+            var ids = [];
+            var rows = grid.datagrid('getSelections');
+            if(id==0)
+            {
+                for (var i = 0; i < rows.length; i++) {
+                    ids.push(rows[i].id);
+                }
+            }
+            else
+            {
+                ids.push(id);
+            }
+            return ids;
+        }
+
+
+        //批量操作
+        function ManageArrayActions(id,confirmtitle, doAction) {
+            var idArray = getSelectedArr(id);
+            if (idArray.length == 0) {
+                msgShow('提示', '请至少选择一条记录进行操作!', 'info');
+                return;
+            }
+            else {
+                $.messager.confirm('提示信息', "你确定要" + confirmtitle + "该<span class='red'>" + idArray.length + "</span>条记录？", function (data) {
+                    if (data) {
+                        ajaxAction('Action-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?DO=' + doAction + '&Id=' + idArray.join(','),'GET',100000);
+                    }
+                });
+            }
+        }
+
+        //添加
+        function tree_add()
+        {
+            var node=tree.tree('getSelected');
+            add(node.id);
+        }
+        function add(parentID) {
+            dialogWin = openWindow("#form-window", "添加信息", "Edit-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?ClassID=" + parentID, "icon-n-add").dialog('open');
+            return;
+        }
+
+        //编辑
+        function edit(id) {
+            var idArray = getSelectedArr(id);
+            if (idArray.length == 1) {
+                dialogWin = openWindow("#form-window", "修改信息", "Edit-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?AdminID=" + idArray[0], "icon-n-edit").dialog('open');
+            }
+            else{
+                msgShow('提示', '请至少且只能选择一条记录进行操作!', 'info');
+            }
+            return;
+        }
+
+        //关闭编辑窗口并刷新列表
+        function close() {
+            refreshGrid();
+        }
+
+        //关闭编辑窗口
+        function cancel() {
+            dialogWin.dialog('close');
+        }
+
+        //关闭编辑窗口并刷新列表
+        function refreshGrid(){
+            if (arraylistWin != null) { arraylistWin.dialog('close'); }
+            if (dialogWin != null) { dialogWin.dialog('close'); }
+            grid.treegrid('clearSelections');
+            $("input[type='checkbox']").eq(0).attr("checked",false);
+        }
+        //刷新列表
+        function refreshGridClose() {
+            refreshGrid();
+            grid.datagrid('reload');
+        }
+
+
+    // -->
+    </script>
+}
+<body>
+    <div data-options="region:'center'">
+        <div id="grid-list" title="※ 信息列表" data-options="toolbar:'#tb',border:false"></div>
+    </div>
+</body>
+<div id="tb" style="height: auto">
+    @*<div id="tabs" class="easyui-tabs menu-tabs" data-options="border:false">
+        <div title="全部" id="9999"></div>
+        @foreach (var item in BtxCMS.Model.SelectItem.GetSelectListItem(BtxCMS.Model.T_AdminUser.SelectIsStatus))
+        {
+            <div title="@item.Text" id="@item.Value"></div>
+        }
+    </div>*@
+    <div class="toolbar">
+        <ul>
+            <li><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="return add($('#SearchClassID').val());">添加</a></li>
+            <li class="datagrid-btn-separator"></li>
+            <li><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="return edit(0);">修改</a></li>
+            <li class="datagrid-btn-separator"></li>
+            <li><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-delete',plain:true" onclick="return ManageArrayActions(0,'删除', 'Delete');">删除</a></li>
+            <li class="datagrid-btn-separator"></li>
+            <li><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-reload',plain:true" onclick="return refreshGridClose();">刷新</a></li>
+        </ul>
+    </div>
+    <div class="toolbar-search">
+        @{
+            <text>
+                <input type="hidden" name="SearchClassID" id="SearchClassID" value="0" />
+                <input type="hidden" name="SearchMarkStatus" id="SearchMarkStatus" value="9999" />
+                关键词：<input class="easyui-combobox InputOff w200" name="SearchKey" id="SearchKey" />&nbsp;&nbsp;<a href="javascript:void(0);" class="easyui-linkbutton" iconcls="icon-search" onclick="return btnSearch();">搜索</a>
+            </text>
+        }
+    </div>
+</div>
+<div id="arraylist-window" title="批量操作" class="easyui-window" data-options="modal:true,closed:true" style="width: 500px; height: 220px; padding: 5px;">
+    <div class="easyui-layout" data-options="fit:true">
+        <div data-options="region:'center',border:false" style="padding: 10px; background: #fff; border: 1px solid #ccc; ">
+            <ul>
+                <li>状态操作：<a href="javascript:ManageArrayActions(0,'正常', 'Started');" class="easyui-linkbutton" data-options="iconCls:'icon-n-add',plain:true">代审核->未处理</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div id="form-window" title="编辑/添加" class="easyui-window" data-options="modal:true,closed:true,fit:true" style="width: 600px; height: 400px;"></div>
+

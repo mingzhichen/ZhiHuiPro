@@ -1,0 +1,325 @@
+﻿@{
+    ViewBag.Title = "";
+    Layout = "~/areas/admin/Views/Layout/_Layout_Base.cshtml";
+}
+@section Head{
+    <script type="text/javascript">
+    <!--
+        var grid;
+        var dialogWin;
+        var arraylistWin;
+
+        $(function () {
+            //初始化-批量操作窗口
+            arraylistWin = $('#arraylist-window').window({
+                iconCls: 'icon-redo',
+                closed: true,
+                modal: false
+            });
+            //初始化列表
+            grid = $('#grid-list').treegrid({
+                striped:true,width: 'auto',
+                height: 'auto',
+                iconCls: 'icon-save',
+                title: "站点栏目",
+                loadMsg: "数据加载中，请稍后……",
+                url: 'List-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx',
+                nowrap: true,
+                rownumbers: false, //行号
+                animate: true,
+                collapsible: true,
+                fit: true, //自动大小
+                singleSelect: false, //是否单选
+                idField: 'ID',
+                treeField: 'Title',
+                frozenColumns: [[
+	                { field: 'ck', checkbox: true, width: 40 },
+                    { field: 'ID', title: 'ID', width: 50, align: 'center' },
+	                { field: 'Title', title: '分类名称', width: 200, align: 'left' }
+			    ]],
+                columns: [[
+                    { field: 'ParentLevels', title: '级别', width: 40, align: 'center' },
+                    { field: 'Initial', title: '前缀', width: 40, align: 'center' },
+                    { field: 'Letter', title: '标识', width: 120, align: 'center' },
+                    { field: 'childcount', title: '子分类', width: 60, align: 'center' },
+                    { field: 'MarkHotTitle', title: '属性', width: 60, align: 'center' },
+					{ field: 'MarkName', title: '标记类型', width: 140, align: 'center' },
+					{ field: 'OrderNum', title: '排序', width: 60, align: 'center', formatter: function (value, row, index) { return "<input type=\"text\" name=\"textfield\" value=\"" + row.OrderNum + "\" id=\"Order_" + row.ID + "\" class=\"easyui-numberbox w30 InputOff\">"; } },
+                    { field: 'MarkStatus', title: '状态', width: 60, align: 'center', formatter: function (value, row, index) { return "<b>" + row.E_MarkStatusTitle + "</b>"; "<a class=\"icon icon-u-status" + value + "\" title=\"" + row.E_MarkStatusTitle.replace(/<[^>]+>/gi, '') + "\">" + row.E_MarkStatusTitle.replace(/<[^>]+>/gi, '') + "</a>"; } },
+                    { field: 'Action', title: '操作', width: 350, align: 'center',
+                        formatter:function(value,row,index){
+                                var add = '<a href="#" onclick="add('+row.ID+')">添加</a> ';
+								var edit = '<a href="#" onclick="edit('+row.ID+')">编辑</a> ';
+								var del = '<a href=\"#\" onclick=\"Class_Remove('+row.ID+',\'删除\',\'Delete\')\">删除</a>';
+								return add+edit+del;
+						    }
+                    },
+                    { field: 'CreateUser', title: '操作员', width: 100, align: 'center', formatter: function (value, row, index) { return value == "" ? row.UpdateUser : value;} },
+                    { field: 'CreateTime', title: '创建时间', width: 140, align: 'center', formatter: function (value, row, index) { return FormatTime(value, "yyyy-MM-dd hh:mm:ss"); } },
+                    { field: 'UpdateTime', title: '更新时间', width: 140, align: 'center', formatter: function (value, row, index) { return FormatTime(value, "yyyy-MM-dd hh:mm:ss"); } }
+                ]],
+                onBeforeLoad: function (row, param) {
+                    if (row) {
+                        $(this).treegrid('options').url = 'List-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?SearchParentID=' + row.ID;
+                    } else {
+                        $(this).treegrid('options').url = '?';
+                    }
+                },
+                toolbar: [{
+                    text: '添加',
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        add(0);
+                    }
+                }, '-', {
+                    text: '重建缓存',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        Class_ReBuild(0);
+                    }
+                }, '-', {
+                    text: '重建分类结构',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        Class_UpdateAllParentPath(0);
+                    }
+                }, '-', {
+                    text: '修改',
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        edit(0);
+                    }
+                }, '-', {
+                    text: '删除',
+                    iconCls: 'icon-delete',
+                    handler: function () {
+                        updateActions(0,'删除', 'Delete');
+                    }
+                }, '-', {
+                    text: '全部展开',
+                    iconCls: 'icon-collapse',
+                    handler: expandAll
+                },{
+                    text: '全部收缩',
+                    iconCls: 'icon-expand',
+                    handler: collapseAll
+                }, {
+                    text: '批量操作',
+                    iconCls: 'icon-expand',
+                    handler: openArrayWin
+                }
+                ]
+            });
+
+            //全部折叠
+            $('#btnCollapseAll,#treegrid-collapseAll').on('click', function () {
+                grid.treegrid('collapseAll');
+            });
+
+            //全部展开
+            $('#btnExpandAll,#treegrid-expandAll').on('click', function () {
+                grid.treegrid('expandAll');
+            });
+
+            $('body').layout();
+        });
+
+        //获得选中列表个数
+        function getSelectedArr(id) {
+            var ids = [];
+            var rows = grid.treegrid('getSelections');
+            if(id==0)
+            {
+                for (var i = 0; i < rows.length; i++) {
+                    ids.push(rows[i].ID);
+                }
+            }
+            else
+            {
+                ids.push(id);
+            }
+            return ids;
+        }
+        //更新批量操作
+        function updateActions(id,confirmtitle, doAction) {
+            var idArray = getSelectedArr(id);
+            if (idArray.length > 0) {
+                $.messager.confirm('提示信息', "你确定要" + confirmtitle + "该<span class='red'>" + idArray.length + "</span>条记录及其下所有子记录？", function (data) {
+                    grid.treegrid('clearSelections');
+                    if (data) {
+                        ajaxAction('Action-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?DO=' + doAction + '&ID=' + idArray.join(','),'GET',100000);
+                    }
+                });
+            } else {
+                Msgshow('请先选择要操作的记录。');
+            }
+        }
+        //分类 删除
+        function Class_Remove(rowid) {
+            if (rowid == undefined) {
+                rowid = 0;
+            }
+            if (rowid == 0) {
+                var selectID = getSelected(0);
+                if (selectID.length == 0) {
+                    $.messager.alert("操作提示","请选择一条要进行删除操作的记录！");
+                    return;
+                }
+                rowid = selectID[0];
+            }
+            $.messager.confirm("删除确认", "您确定要删除这个记录吗？", function (b) {
+                if (b) {
+                    ajaxAction('Remove-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?ClassID=' + rowid, 'post', 100000);
+                }
+            });
+        }
+        //更新排序
+        function updateOrders(parentID,id,doAction) {
+            $.ajax({
+                url: 'UpdateOrders.aspx?DO=' + doAction + '&ID=' + id,
+                type: 'GET',
+                cache: false,
+                dataType: "json",
+                timeout: 100000,
+                error: function () {
+                    $.messager.alert('错误', '操作失败,提交超时!', 'error');
+                },
+                success: function (data) {
+                    if (data.success) {
+                        Msgslide('操作成功<span class="red">' + data.message + "</span>条记录！");
+                        //$.messager.alert('操作成功', data.message, 'info');
+                        refreshGrid(parentID);
+                    } else {
+                        $.messager.alert('操作错误', data.message, 'error');
+                    }
+                }
+            });
+        }
+        //添加信息
+        function add(parentID) {
+            var idArray = getSelectedArr(parentID);
+            if (idArray.length == 0) {
+                dialogWin = openWindow("#form-window","添加信息", "Edit-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?ParentID="+parentID, "icon-add").dialog('open');
+                //Msgslide('请选择一条记录进行操作!');
+            }
+            else if (idArray.length > 1) {
+                Msgfade('您选择了多条记录,只能选择一条记录进行添加!');
+                return;
+            }
+            else {
+                dialogWin = openWindow("#form-window","添加信息", "Edit-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?ParentID=" + idArray.join(','), "icon-add").dialog('open');
+            }
+            return false;
+        }
+        //编辑信息
+        function edit(id) {
+            var idArray = getSelectedArr(id);
+            if (idArray.length == 0){
+                Msgslide('请选择一条记录进行操作!');
+                return;
+            }
+            else if (idArray.length > 1) {
+                Msgfade('您选择了多条记录,只能选择一条记录进行修改!');
+                return;
+            }
+            else {
+                dialogWin = openWindow("#form-window","修改信息", "Edit-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?ClassID=" + idArray.join(','), "icon-edit").dialog('open');
+            }
+            return false;
+        }
+
+        //取消
+        function cancel() {
+            dialogWin.dialog('close');
+            arraylistWin.dialog('close');
+        }
+        //关闭编辑窗口并刷新列表
+        function close(id) {
+            dialogWin.dialog('close');
+            arraylistWin.dialog('close');
+            refreshGrid(id);
+        }
+        //刷新列表
+        function refreshGrid(id){
+            grid.treegrid('reload',id);
+            grid.treegrid('clearSelections');
+        }
+
+        function refreshGridClose(id) {
+            cancel();
+            refreshGrid(id);
+        }
+
+        //全部展开
+        function expandAll(){
+			var node = grid.treegrid('getSelected');
+			if (node){
+				grid.treegrid('expandAll', node.Title);
+			} else {
+				grid.treegrid('expandAll');
+			}
+		}
+        //全部收缩
+        function collapseAll(){
+			var node = grid.treegrid('getSelected');
+			if (node){
+				grid.treegrid('collapseAll', node.Title);
+			} else {
+				grid.treegrid('collapseAll');
+			}
+        }
+
+        function openArrayWin() {
+            arraylistWin.window('open');
+        }
+
+        //分类 重建缓存
+        function Class_ReBuild() {
+            ajaxAction('ReBuild-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx', 'post', 100000);
+        }
+        //分类 重建分类结构
+        function Class_UpdateAllParentPath() {
+            $.messager.confirm("提示信息", "你确定要<span class='red'>重建分类结构</span>，该部分将消耗过多时间？", function (data) {
+                if (data) {
+                    ajaxAction('UpdateAllParentPath-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx', 'post', 100000);
+                }
+            });
+        }
+        function Index(type) {
+            var idArray = getSelectedArr(0);
+            if (idArray.length == 0) {
+                $.messager.alert("操作错误", "请选择要进行操作的记录！");
+            } else {
+                ajaxAction('ManageArrayAction-@(ViewData["MvcMarkName"])-@(ViewData["MvcClassID"]).aspx?MarkType=FETCHINDEX&Indexs=' + type + '&InfoID=' + idArray.join(','), 'post', 100000);
+            }
+        }
+
+    // -->
+    </script>
+}
+<body class="easyui-layout" style="overflow: auto;">
+    <div region="center" border="false" style="overflow: auto;">
+        <div id="grid-list" border="false">
+        </div>
+    </div>
+</body>
+<div id="arraylist-window" title="批量操作" class="easyui-window" data-options="modal:true,closed:true" style="width: 400px; height: 130px; padding: 5px;">
+    <div class="easyui-layout" data-options="fit:true">
+        <div id="action" data-options="region:'center',border:false" style="padding: 10px; background: #fff; border: 1px solid #ccc; ">
+            <table class="table-options" fit="true" id="action">
+                <tr>
+                    <th class="tdleft">
+                        页面推荐操作：
+                    </th>
+                </tr>
+                <tr>
+                    <td class="">
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-cancel',plain:false" onclick="return Index(0);">取消推荐</a>
+                        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-67-09',plain:false" onclick="return Index(1);">推荐首页</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<div id="form-window" title="编辑/添加" class="easyui-window" data-options="modal:true,closed:true" style="width: 600px; height: 400px;"></div>

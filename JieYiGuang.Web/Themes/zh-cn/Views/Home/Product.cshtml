@@ -1,0 +1,97 @@
+﻿@using JieYiGuang.Model
+@using System.Linq
+@{
+    Layout = "../Shared/_Layout.cshtml";
+    ViewBag.Title = Model.SeoTitle;
+    ViewBag.KeyWord = Model.SeoKeywords;
+    ViewBag.Description = Model.SeoDescription;
+
+    var productList = ViewData["ProductList"] as List<T_News>;
+    var ClassModel = ViewData["ClassModel"] as T_ClassNews;
+}
+@section Head{
+}
+@model T_News
+
+<div class="contant">
+  <div class="top"> </div>
+    <!--star banner-->
+    @Html.Partial("~/Views/Shared/_Partial_Banner.cshtml")
+    <!--end banner-->
+  <div class="pubanner">
+    <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,19,0" height="160" width="961">
+      <param name="movie" value="flash/banner3.swf">
+      <param name="quality" value="high">
+      <embed src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/banner3.swf")" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" height="160" width="961">
+    </object>
+  </div>
+  <div class="mian_warp">
+    <div class="pucont">
+      <div class="puconttitle"><span class="left logo"><a href="/"></a></span> </div>
+      <div class="both"> </div>
+      <div class="pucontcont">
+          <div class="left w200"><img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/Producttlefttitle.jpg")">
+                            @Html.Action("_Partial_Navigation", "Home", new { id = Model.ClassID })
+          </div>
+        <div class="right w725">
+          <div class="left w543">
+            <div class="puzcont">
+              <div class="puzcontwz"> <span class="left"><a href="/">首页</a> &gt; <a href="@(Url.Action("Product", "Home", new { ClassID=5 }))">产品中心</a> &gt; <span>@(ClassModel == null ? String.Empty : ClassModel.Title)</span></span> </div>
+              <div class="main" style="padding-top: 25px; width:640px;">
+                <div class="prodcut_nav">
+                  <ul>
+                      @if (productList != null)
+                      {
+                          foreach (var item in productList)
+                          {
+                              var url = Url.Action("Product", "Home", new { Id = item.ID });
+                              <li><a href="@(url)" class="@(item.ID == Model.ID ? "product_current" : "")">@(item.Title)</a></li>
+                          }
+                      }
+                  </ul>
+                </div>
+                <div style="clear:both"></div>
+                <div class="prodcut_cont">
+                  @(Html.Raw(Model.Contents))
+                  <table border="0" cellpadding="0" cellspacing="0" width="540">
+                    <tbody>
+                      <tr>
+                        <td><div class="print" style="border-top: #CCCCCC dotted 1px;"> <span class="left"> <a href="#">&nbsp;</a></span> <span class="right"> <a href="javascript:;" id="topHref"> <img alt="" src="@Url.ThemeContent("~/Content/themes/" + ThemeManager.Style + "/images/jt4.jpg")"> 返回顶部</a></span> </div></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="both2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="both"> </div>
+      </div>
+      <div class="both"> </div>
+    </div>
+  </div>
+</div>
+
+@section Footer{
+<script type="text/javascript">
+<!--
+function initArray(){for(i=0;i<initArray.arguments.length;i++)
+this[i]=initArray.arguments[i];}var isnMonths=new initArray("1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月");var isnDays=new initArray("星期日","星期一","星期二","星期三","星期四","星期五","星期六","星期日");today=new Date();hrs=today.getHours();min=today.getMinutes();sec=today.getSeconds();clckh=""+((hrs>12)?hrs-12:hrs);
+clckm=((min<10)?"0":"")+min;clcks=((sec<10)?"0":"")+sec;clck=(hrs>=12)?"下午":"上午";var stnr="";var ns="0123456789";var a="";
+//--> 
+
+$(document).ready(function () {
+    $(".mj_nav_list span").click(function () {
+        $(".mj_nav_list span").removeClass("mj_sn");
+        $(this).addClass("mj_sn").siblings().removeClass("mj_sn");
+        $(".mj_nav_list").find("ul").hide();
+        $(this).next().show()
+    })
+    $("#topHref").click(function (){
+        $('body,html').animate({scrollTop:0},500);
+    });
+})
+
+</script>
+}

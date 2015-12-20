@@ -1,0 +1,105 @@
+﻿@model JieYiGuang.Model.T_NewsItem
+@{
+    Layout = "~/areas/admin/Views/Layout/_Layout_Base.cshtml";
+}
+@section Head{
+    @Html.Partial("~/areas/admin/Views/Layout/_Layout_Head_Edit.cshtml")
+    <script type="text/javascript">
+
+        function InfoItem_Save(id) {
+            submit();
+        }
+    </script>
+}
+<body class="easyui-layout">
+    <div data-options="region:'center',border:true">
+        @using (Html.BeginRouteForm("Admin_MapRoute_ModuleMenuID", new { action = "SaveItem", controller = "News", @MvcClassID = ViewData["MvcClassID"], @MvcMarkName = ViewData["MvcMarkName"], @MvcTemplate = ViewData["MvcTemplate"] }, FormMethod.Post, new { ID = "EditForm", name = "EditForm", fit = "true", style = "width:100%;height:100%;" }))
+        {
+            @Html.ValidationSummary()
+            @Html.AntiForgeryToken()
+            @Html.Hidden("MvcTemplate", ViewData["MvcTemplate"])
+            @Html.Hidden("MvcMarkName", ViewData["MvcMarkName"])
+            @Html.Hidden("MvcClassID", ViewData["MvcClassID"])
+            @Html.HiddenFor(m => m.ID)
+            @Html.HiddenFor(m => m.GUID)
+            @Html.HiddenFor(m => m.CreateTime)
+            @Html.HiddenFor(m => m.UpdateTime)
+            @Html.HiddenFor(m => m.CreateUser)
+            @Html.HiddenFor(m => m.UpdateUser)
+            @Html.HiddenFor(m => m.FromGUID)
+            <div class="easyui-tabs" data-options="border:false,fit:true">
+                <div title=" 基本属性" style="padding: 3px;">
+                    <table class="table">
+                        <tr>
+                            <th class="tdright">
+                                信息 GUID：
+                            </th>
+                            <td>
+                                【@(Model.GUID.ToString().ToUpper())】@(Model.ID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright" style="width: 100px;">
+                                排序：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(t => t.Orders, new { Class = "easyui-numberbox w40 ", required = "true" })
+                                （由低 -> 高）
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                标 题：
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(t => t.Title, new { @Class = "easyui-validatebox textbox w500 Title ", required = "true" })
+                                简标题：@Html.TextBoxFor(t => t.SubTitle, new { Class = "easyui-validatebox textbox w300" })
+                            </td>
+                        </tr>
+                        <tr>
+                        <tr>
+                            <th class="tdright" style="width: 100px;">
+                                缩略图：
+                            </th>
+                            <td>
+                                <img src="@(Model.Path)" width="100" id="Images_Show" class="screenshot"><br>
+                                @Html.TextBoxFor(t => t.Path, new { @class = "easyui-validatebox textbox w500 " })
+                                @Html.Raw(Html.UploadDialog(1, "Path", "图片上传", "", JieYiGuang.Web.UI.Class.UpLoad.UploadModel.UpdateFileType(JieYiGuang.Web.UI.Class.UpLoad.UploadType.Image)))
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                内　容：
+                            </th>
+                            <td>
+                                <div class="box">
+                                    <input id="IsFirstImage" name="IsFirstImage" type="checkbox" value="true" />
+                                    <label for="IsFirstImage">
+                                        提取第一个图片为缩略图
+                                    </label>
+                                    <input id="IsLoadImg" name="IsLoadImg" type="checkbox" value="true" />
+                                    <label for="IsLoadImg">
+                                        下载所有图片
+                                    </label>
+                                </div>
+                                @Html.WebEditor(t => t.Contents, "Default", 800, 420)
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="tdright">
+                                信息状态：
+                            </th>
+                            <td>
+                                @Html.DropDownListFor(t => t.MarkStatus, JieYiGuang.Model.SelectItem.GetSelectListItem(JieYiGuang.Model.Dictionary.IsStatus), new { @class = "easyui-combobox", @style = "width:120px;" })
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="dialog-button TextCenter" data-options="region:'south',border:false">
+        <a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-ok',plain:false" onclick="return InfoItem_Save('603509d5-5a23-4d18-9b42-d9191c863a39');">保存</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-no'" onclick="return window.parent.cancel();">取消</a>
+    </div>
+</body>

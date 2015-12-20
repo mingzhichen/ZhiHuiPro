@@ -1,0 +1,115 @@
+﻿@{
+    ViewBag.Title = "";
+    Layout = "~/areas/admin/Views/Layout/_Layout_Base.cshtml";
+
+}
+@section Head{
+    <link type="text/css" rel="stylesheet" href="~/App_Themes/Default/Login.css" />
+    <script type="text/javascript">
+        //初始化
+        $(function () {
+            //文本框 回车 触发 Button 事件
+            $("#AdminName,#AdminPassWord,#VerifyCode").keydown(function (e) {
+                var curKey = e.which;
+                if (curKey == 13) {
+                    Submit();
+                }
+            });
+        });
+
+        //ajax 验证
+        function Submit() {
+            $("#Message").html("用户登入验证中...");
+            $('#Login').form('submit', {
+                onSubmit: function () {
+                    var isValid = $('#Login').form('validate');
+                    if(isValid)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        $("#Message").html("请检查您的输入是否有误！");
+                        return false;
+                    }
+                },
+                success: function (data) {
+                    eval('data=' + data);
+                    if (data.success) {
+                        $("#Message").html(data.message);
+                        window.location.href = "@Url.RouteUrl("Admin.Default", new { action = "Default" })";
+                    } else {
+                        Error(data.message)
+                    }
+                },
+                error: function () { alert("加载错误"); }
+            });
+        }
+
+        //错误提示
+        function Error(title) {
+            $("#imgVerify").attr("src", '@Url.RouteUrl("Admin.Default", new { action = "GetVerifyCode"})?s=' + Math.random());
+            $("#Message").html(title);
+        }
+        function RefreshVerifyCode() {
+            $('#imgVerify').attr('src', $('#imgVerify').attr('src') + '?');
+        }
+
+
+    </script>
+}
+<body class="easyui-layout" style="overflow-y: hidden" scroll="no" fit="true">
+    <div region="center">
+        <div id="Login-header">
+            <div id="Login-Lan">
+                <a href="?Language=zh-CN" class="zh-CN" title="中文版"></a><a href="?Language=zh-TW" class="zh-TW" title="繁体版"></a><a href="?Language=en-US" class="en-US" title="ENGLISH"></a>
+            </div>
+        </div>
+        <div id="Login-Content">
+            <div id="w" class="easyui-window" title="登录网站管理系统 DtxCMS@B.T.X" iconcls="icon-save" style="width: 780px; height: 440px; padding: 5px; top: 80px;" closable="false" minimizable="false" maximizable="false">
+                <div class="easyui-layout" fit="true">
+                    <div region="center" border="false" style="border: 1px solid #ccc; overflow: hidden;" class="Login-Window">
+                        <div id="Login-Center-Left">
+                            <div id="ContentText">
+                                <ul>
+                                    <li class="red">请使用火狐或IE7以上浏览器</li>
+                                    <li>功能强大的网站管理系统 </li>
+                                </ul>
+                                <div class="help">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Login-Center-Right">
+                            <div id="loginForm">
+                                <div id="loginForm-Title">
+                                    登录网站管理系统
+                                </div>
+                                <div id="loginForm-AdminLogin">
+                                    @using (Html.BeginRouteForm("Admin.Default", new { action = "Login" }, FormMethod.Post, new { id = "Login", name = "Login" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <ul>
+                                            <li><span>用户名：</span> @Html.TextBox("AdminName", "", new { @id = "AdminName", @class = "easyui-validatebox Login-User w140", @validtype = "length[2,20]", @required = "true", @placeholder = "用户名" })</li>
+                                            <li><span>密　码：</span> @Html.Password("AdminPassWord", "", new { @id = "AdminPassWord", @class = "easyui-validatebox Login-Pass w140", @validtype = "length[2,20]", @required = "true", @placeholder = "密码" })</li>
+                                            <li><span>验证码：</span><img src="@Url.RouteUrl("Admin.Default", new { action = "GetVerifyCode"})" title="看不清？点击更换" id="imgVerify" class="verifycodeimg" onclick="RefreshVerifyCode();" align="middle" style=" height: 22px; cursor: pointer; border: 1px solid #ccc; vertical-align:middle;" /> @Html.TextBox("VerifyCode", "", new { @id = "VerifyCode", @class = "easyui-validatebox textbox ", @required = "true", @missingMessage = "请输入6位验证码", @maxlength = "6", align = "middle", style = "width:82px;padding-left:3px;", @placeholder = "验证码" }) <br /><a href="javascript:void(0);" onclick="RefreshVerifyCode();" style=" padding-left:60px;">看不清，换一张?</a></li>
+                                            <li style="margin: 6px 0 0 56px;"><input type="button" name="btnLogin" value=" 登录 " class="ButtomBG" onclick="return Submit();" />&nbsp;&nbsp;@Html.CheckBox("SaveName", false, new { id = "SaveName" })<label for="SaveName">记住用户名</label></li>
+                                        </ul>
+                                    }
+                                </div>
+                                <div id="IpAddress">
+                                    @JieYiGuang.Common.ServerHelper.GetClientIP
+                                </div>
+                                <div id="Message">@Html.ValidationSummary()</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="Login-Bottom">
+            <div id="copyright">
+                Copyright © 2004-2008 www.BTXStudio.com Co., Ltd. All Rights Reserved.
+            </div>
+        </div>
+    </div>
+</body>

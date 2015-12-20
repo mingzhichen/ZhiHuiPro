@@ -1,0 +1,28 @@
+<html>
+<head>
+	<title>Change Log</title>
+	<style type="text/css">
+		body { font: normal 10pt Helvetica, Arial, sans-serif; }
+	</style>
+</head>
+<body><h1>Enyim Memcached Version History</h1>
+
+<h2>Version 2.8</h2>
+
+<ul>
+<li>Performance monitoring support. The included DefaultPerformanceMonitor will use Windows performance counters. See <a href="http://github.com/enyim/EnyimMemcached/wiki/Configure-the-Performance-Monitor">the wiki</a> about configuring this feature.</li>
+<li>Fixed a race condition in the InterlockedQueue. See <a href="https://github.com/enyim/EnyimMemcached/issues#issue/36">Bug #36</a>. Thanks to <a href="https://github.com/danp60">danp60</a>.</li>
+<li>Now it's possible to change the timeout for acquiring a socket from a full pool. This can help reduce the impact of a dead node on yor application. See the <a href="https://github.com/enyim/EnyimMemcached/wiki/MemcachedClient-Configuration">memached/socketPool</a> element on the wiki.</li>
+<li>Fixed <a href="https://github.com/enyim/EnyimMemcached/issues#issue/37">Bug #37</a> - NLogFactory class name incorrect</li>
+<li>Added some workarounds for undisposed clients blocking IIS application pool recycles causing 100% CPU spikes</li>
+</ul>
+
+<h2>Version 2.7</h2>
+
+<ul>
+<li>Removed log4net from the project and made the log provider configurable. See http://github.com/enyim/EnyimMemcached/wiki/Configure-Logging</li>
+<li>Fixed the config section to default to the Binary protocol. (The MemcachedClientConfiguration was already doing this for some time.)</li>
+<li>The client no longer checks if objects are larger than 1MB, but lets the server sort it out</li>
+</ul>
+</body>
+</html>
